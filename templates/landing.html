@@ -1,11 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Landing Page</title>
+  <link rel="stylesheet" type="text/css" href="../static/css/home.css">
 </head>
 <body>
-    
+  <!-- unregistered/not signed-in nav bar here -->
+  <main>
+    <div class="hero-text"><h1>PLATED</h1></div>
+    <div class="hero-slideshow">
+      <video muted autoplay playsinline class="hero-video" id="video1" style="z-index: 10; opacity: 1;">
+        <source src="../static/media/hero1.mp4" type="video/mp4">
+      </video>
+      <video muted playsinline class="hero-video" id="video2">
+        <source src="../static/media/hero2.mp4" type="video/mp4">
+      </video>
+      <video muted playsinline class="hero-video" id="video3">
+        <source src="../static/media/hero3.mp4" type="video/mp4">
+      </video>
+      <video muted playsinline class="hero-video" id="video4">
+        <source src="../static/media/hero4.mp4" type="video/mp4">
+      </video>
+    </div>
+    <section>
+      <h2>Top 25 Recipes</h2>
+      <div class="recipe-carousel">
+        <img src="../static/media/recipe1.jpg" alt="rice bowl">  <!-- will eventually change to dynamically updated images that link to recipes -->
+        <img src="../static/media/recipe2.jpg" alt="noodles">
+        <img src="../static/media/recipe3.jpg" alt="spaghetti and meatballs">
+        <img src="../static/media/recipe1.jpg" alt="rice bowl">
+        <img src="../static/media/recipe2.jpg" alt="noodles">
+        <img src="../static/media/recipe3.jpg" alt="spaghetti and meatballs">
+      </div>
+    </section>
+  </main>
+  <!-- footer here -->
+
+  <script src="../static/js/landing.js"></script>
 </body>
 </html>
