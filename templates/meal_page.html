@@ -3,9 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Meal Page</title>
+    <link rel="stylesheet" href="/static/css/meal_page.css">
 </head>
 <body>
-    
+<main>
+    <div class="meal-card">
+        
+        <div class="card-header">
+            <h2 class="meal-title">I ate...</h2>
+            <span class="close-btn" onclick= "history.back()">x</span>
+        </div>
+
+        <div class="card-body">
+
+            <div class="meal-photo">
+                <!-- plus sign that toggles for meal upload -->
+                <label class="upload-card" for="mealPhoto">
+                    <img id= "previewImg" src="" alt="meal preview">
+                    <div class="upload-overlay">+</div>
+                </label>
+                <!-- asks for user to upload photo + only accepts imgs format -->
+                <input type="file" id="mealPhoto" accept="image/*">
+            </div>
+            
+            <div class="meal-right">
+                <form id ="mealForm">
+
+                <!-- asks the user if they want to add meal entry to journal  -->
+                <input type="text" id="mealTitle" placeholder="Type your meal...">
+
+                <div class="eaten-row">
+                    <label id="addToJournalRow">
+                        <input type="checkbox" id="addToJournal"> Add to your Journal?
+                </label>
+                <div id="journalDetail">
+                    <label>
+                        <input type="checkbox" id="eatenCheck" checked> Eaten on
+                    </label>
+                    <input type="date" id="eatenDate" class="date-input">
+                </div>
+                <!-- small plate rating that appears next to checkmark after they rate -->
+                <div id="miniRating" style="display:none; align-items:center; gap:3px"></div>
+            </div>
+            
+            <textarea id="mealCaption" placeholder="Share your thoughts..."></textarea>
+
+            <div class="form-footer">
+                <span class="footer-label">Tags</span>
+
+                <!-- tag section -->
+                <div class="tag-box" id="tagBox">
+                    <input type="text" id="tagInput" placeholder="e.g healthy, homemade">
+                </div>
+                
+                <!-- plate rating section! -->
+                <div class="pltrating-col">
+                    <span class="pltfooter-label"> Rating</span>
+                    <div class="pltrating-row">
+                        <!-- resets rating if they click x -->
+                        <span id="pltratingClear">x</span>
+                        <div id="pltratingBox"></div>
+                        <span id="pltratingText"></span>
+                    </div>
+                </div>
+                <button type="submit">Share</button>
+            </div>
+
+        </form>
+
+    </div>
+        
+</div>
+</main>
+<script src="/static/js/meal.js"></script>
 </body>
 </html>
