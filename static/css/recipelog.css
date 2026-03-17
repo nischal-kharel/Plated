@@ -258,7 +258,7 @@ textarea {
 
 button {
     padding: 8px 20px;
-    background: #a6d584;
+    background: #76c83c;
     color: white;
     border: none;
     border-radius: 6px;
@@ -271,7 +271,7 @@ button {
     box-shadow: 0 2px 12px rgba(0,0,0,0.15);
 }
 button:hover { 
-    background: #86ad6b; 
+    background: #76c83cbc;
 }
 
  .tag-hint {
