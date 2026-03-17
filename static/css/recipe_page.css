@@ -1,0 +1,131 @@
+body {
+    margin: 0;
+    font-family: Helvetica, Arial, sans-serif;
+    background-color: #f7f2e6;
+    color: #111;
+}
+
+.recipe-page {
+    min-height: 100vh;
+    padding: 36px 36px 48px 36px;
+    box-sizing: border-box;
+}
+
+.recipe-layout {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 60px;
+}
+
+.recipe-left {
+    flex: 1;
+    max-width: 700px;
+}
+
+.recipe-left h1 {
+    font-size: 32px;
+    font-weight: 400;
+    margin: 0 0 34px 0;
+}
+
+.recipe-details-block h2 {
+    font-size: 28px;
+    font-weight: 400;
+    margin: 0 0 18px 0;
+}
+
+.recipe-details-block ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.recipe-details-block li {
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.9;
+    position: relative;
+    padding-left: 20px;
+}
+
+.recipe-details-block li::before {
+    content: "-";
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.recipe-right {
+    width: 380px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.recipe-photo-box {
+    width: 240px;
+    height: 300px;
+    border: 3px solid #7c6b54;
+    background: #d9d9d9;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.recipe-photo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.avg-rating-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.avg-plate-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 34px;
+}
+
+.avg-plate-rating img {
+    width: 40px;
+    height: auto;
+    display: block;
+}
+
+.avg-rating-text {
+    font-size: 18px;
+    color: #444;
+    margin: 0;
+}
+
+@media (max-width: 900px) {
+    .recipe-layout {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .recipe-right {
+        width: 100%;
+        align-items: flex-start;
+    }
+
+    .recipe-left h1 {
+        font-size: 28px;
+    }
+
+    .recipe-details-block h2 {
+        font-size: 24px;
+    }
+
+    .recipe-details-block li {
+        font-size: 20px;
+    }
+}

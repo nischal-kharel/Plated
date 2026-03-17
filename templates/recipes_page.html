@@ -3,9 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Recipe Page</title>
+    <link rel="stylesheet" href="/static/css/recipe_page.css">
 </head>
 <body>
+    <main class="recipe-page">
+        <div class="recipe-layout">
+            
+            <section class="recipe-left">
+                <h1 id="recipeName">Recipe name</h1>
     
+                <div class="recipe-details-block">
+                    <h2>Recipe details:</h2>
+                    <ul id="recipeDetails">
+                        <li>Prep time: 25 minutes</li>
+                        <li>Cook time: 30 minutes</li>
+                        <li>Servings: 4</li>
+                        <li>Main ingredients: pasta, garlic, parmesan</li>
+                    </ul>
+                </div>
+            </section>
+    
+            <aside class="recipe-right">
+                <div class="recipe-photo-box">
+                    <img
+                        id="recipePhoto"
+                        src="https://placehold.co/240x320"
+                        alt="Recipe photo"
+                    >
+                </div>
+    
+                <div class="avg-rating-section">
+                    <div id="avgPlateRating" class="avg-plate-rating"></div>
+                    <p id="avgRatingText" class="avg-rating-text">4.5 out of 5</p>
+                </div>
+            </aside>
+    
+        </div>
+    </main>
+    
+    <script src="/static/js/recipe.js"></script>
 </body>
 </html>
