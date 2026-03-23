@@ -1,6 +1,13 @@
 html, body {
     margin: 0; /* remove default spacing so videos reach edge of screen */
     padding: 0;
+    overflow-x: hidden;
+    background-color: bisque;
+    font-family: Helvetica, sans-serif;
+}
+
+main {
+    margin: 0;
 }
 
 .hero-text {
@@ -48,6 +55,23 @@ html, body {
     z-index: 1;
 }
 
+.carousel-container {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(255, 250, 244);
+    border: 2px solid gray;
+    height: fit-content;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.carousel-text > p{
+    font-size: 40px;
+    margin-top: 15px;
+    margin-left: 15px;
+    margin-bottom: 0px;
+}
+
 /* styling for top 25 recipes carousal section of landing page */
 .recipe-carousel {
     --items: 6;
@@ -58,7 +82,6 @@ html, body {
     --carousel-item-gap: 20px;
 
     position: relative;
-    background-color: #bbe5bf;
     z-index: 10;
     overflow-x: clip;
     width: var(--carousel-width);
