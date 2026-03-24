@@ -10,11 +10,12 @@
     <main class = "profile-page">
         <section class = "left-content">
             <div class = "profile-card">
-                <img
-                class="profile-pic"
-                src="https://placehold.co/120x120"
-                alt="Profile picture"
-                />
+                <div class="profile-upload">
+                  <label class="default-pfp" for="profile-pic">
+                    <img id="profile-preview" src="/static/media/profileimages/default-pfp.svg" alt="Profile picture"/>
+                  </label>
+                  <input type="file" id="profile-pic" accept="image/*">
+                </div>
 
                 <div class = "profile-info">
                     <h1 class = "username"> username </h1>
@@ -30,6 +31,19 @@
                     </div>
                 </div>
             </div>
+            <section class="content-section">
+                <div class="bio-section">
+                    <p id="bio">This is my bio. I love recipes!</p>
+                    <button id="edit-profile-button">Edit Profile</button>
+                </div>
+                <div id="backdrop"></div> <!-- signify to user no background interaction is allowed while popup is displayed-->
+                <div class="edit-popup-card" id="edit-overlay">
+                  <p class="popup-title">Edit bio:</p>
+                  <textarea id="bio-text" name="profile bio" maxlength="300"></textarea>
+                  <p class="popup-text">Max chars: 300</p>
+                  <button id="save-profile-button">Save</button>
+                </div>
+            </section>
 
             <section class = "content-section">
                 <div class = "section-header">
@@ -68,5 +82,6 @@
             </div>
         </aside>
     </main>
+    <script src="/static/js/profile.js"></script>
 </body>
 </html>
