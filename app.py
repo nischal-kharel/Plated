@@ -12,6 +12,58 @@ def get_db():
         cursorclass=pymysql.cursors.DictCursor
     )
 
+def get_user_by_id(user_id):
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                'SELECT user_id, username, email FROM users WHERE user_id = %s',
+                (user_id,)
+            )
+            return cursor.fetchone()
+    finally:
+        db.close()
+
+def get_follower_count(user_id):
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                'SELECT COUNT(*) AS count FROM follows WHERE following_id = %s',
+                (user_id,)
+            )
+            return cursor.fetchone()['count']
+    finally:
+        db.close()
+
+def get_following_count(user_id):
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                'SELECT COUNT(*) AS count FROM follows WHERE follower_id = %s',
+                (user_id,)
+            )
+            return cursor.fetchone()['count']
+    finally:
+        db.close()
+
+def is_following(follower_id, following_id):
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''
+                SELECT 1
+                FROM follows
+                WHERE follower_id = %s AND following_id = %s
+                ''',
+                (follower_id, following_id)
+            )
+            return cursor.fetchone() is not None
+    finally:
+        db.close()
+
 @app.route('/')
 def landing():
     return render_template('landing.html')
@@ -22,7 +74,22 @@ def home():
 
 @app.route('/profile')
 def profile():
-    return render_template('profile.html')
+    user_id = session.get('user_id')
+    
+    if not user_id:
+        flash('Please log in first.')
+        return redirect(url_for('login'))
+    
+    user = get_user_by_id(user_id)
+    follower_count = get_follower_count(user_id)
+    following_count = get_following_count(user_id)
+
+    return render_template(
+        'profile.html',
+        user = user,
+        follower_count = follower_count,
+        following_count = following_count
+    )
 
 @app.route('/recipes')
 def recipe_page():
