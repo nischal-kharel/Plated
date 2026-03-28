@@ -1,0 +1,157 @@
+body {
+    background-color: bisque;
+    font-family: Helvetica, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+.instructions-card {
+    width: 960px;
+    max-width: 100%;
+    background: #fffcfc;
+    border: 2.5px solid #c4bb9e;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0;
+    transform: translateY(8px);
+    animation: fadeIntoYou 0.8s ease forwards;
+}
+
+@keyframes fadeIntoYou {
+    to {
+       opacity: 1; transform: translateY(0); 
+   } 
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px 14px 24px;
+    border-bottom: 1px solid #e8e2d8;
+}
+
+.page-title {
+    font-size: 22px;
+    margin: 0; 
+}
+
+.close-btn {
+    color: #aaa;
+    cursor: pointer;
+    font-size: 18px;
+}
+.close-btn:hover {
+    color: #555; 
+}
+
+form {
+    padding: 24px; 
+}
+
+.recipe-specifics {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.specific-option {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.field-hint {
+    font-size: 10px;
+    color: #999;
+    margin: 0 0 6px 0;
+}
+
+.time-input-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 6px 10px;
+    background: #fff;
+    width: 100px;
+}
+
+.time-input {
+    border: none;
+    outline: none;
+    font-size: 15px;
+    font-family: inherit;
+    width: 50px;
+}
+
+.time-unit { font-size: 12px; color: #999; }
+
+/* two col */
+.two-col {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.two-col .section {
+    flex: 1; 
+}
+
+.section {
+    margin-bottom: 20px; 
+}
+
+textarea {
+    width: 100%;
+    height: 160px;
+    resize: none;
+    padding: 10px 12px;
+    font-size: 14px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: inherit;
+    background: #eef3f8;
+    line-height: 1.7;
+}
+
+.form-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 16px;
+    border-top: 1px solid #e8e2d8;
+}
+
+button {
+    padding: 8px 20px;
+    background: #76c83c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+button:hover {
+    background: #5aaa28; 
+}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Instructions</title>
+    <link rel="stylesheet" href="/static/css/instructions.css">
+</head>
+<body>
+<main>
+    <div class="instructions-card">
+
+        <div class="card-header">
+            <h2 class="page-title">Recipe Instructions</h2>
+            <span class="close-btn" onclick="history.back()">x</span>
+        </div>
+        <form id="instructionsForm">
+            <!-- cook time row -->
+            <div class="recipe-specifics">
+                <div class="specific-option">
+                    <label class="field-label">Prep Time</label>
+                    <div class="time-input-row">
+                        <input type="number" id="prepMins" min="0" placeholder="0" class="time-input">
+                        <span class="time-unit">min</span>
+                    </div>
+                </div>
+                <div class="specific-option">
+                    <label class="field-label">Cook Time</label>
+                    <div class="time-input-row">
+                        <input type="number" id="cookMins" min="0" placeholder="0" class="time-input">
+                        <span class="time-unit">min</span>
+                    </div>
+                </div>
+                <div class="specific-option">
+                    <label class="field-label">Servings</label>
+                    <div class="time-input-row">
+                        <input type="number" id="servings" min="1" placeholder="1" class="time-input">
+                        <span class="time-unit">ppl</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="two-col">
+                <!-- ingredients -->
+                <div class="section">
+                    <label class="field-label">Ingredients</label>
+                    <p class="field-hint">One per line</p>
+                    <textarea id="ingredients" placeholder="2 cups flour&#10;1 tsp salt&#10;3 eggs"></textarea>
+                </div>
+
+                <!-- steps -->
+                <div class="section">
+                    <label class="field-label">Steps</label>
+                    <p class="field-hint">One per line</p>
+                    <textarea id="steps" placeholder="Preheat oven to 350°F&#10;Mix dry ingredients&#10;Add wet ingredients"></textarea>
+                </div>
+
+            </div>
+            <!-- notes -->
+            <div class="section">
+                <label class="field-label">Notes</label>
+                <textarea id="recipeNotes" placeholder="Any extra tips, substitutions, or notes..."></textarea>
+            </div>
+
+            <div class="form-footer">
+                <button type="submit">Save Recipe</button>
+            </div>
+
+        </form>
+    </div>
+</main>
+<script src="/static/js/instructions.js"></script>
+</body>
+</html>
