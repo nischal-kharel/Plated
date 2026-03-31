@@ -1,20 +1,161 @@
-*{
-    margin: 0;
+html, body {
+    margin: 0; /* remove default spacing so videos reach edge of screen */
     padding: 0;
+    overflow-x: hidden;
+    background-color: bisque;
     font-family: Helvetica, sans-serif;
     box-sizing: border-box;
 }
+
+main {
+    margin: 0;
+}
+
+.hero-text {
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    font-size: 4em;
+    color: white;
+}
+
+/* changed from 100vh to 77vh */
+
+.hero-slideshow {
+    height: 77vh;
+    position: relative;
+}
+
+.hero-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    top: 0;
+    left: 0;
+    position: absolute;
+    transition: all 200ms linear;
+    z-index: 1;
+    opacity: 0;
+}
+
+.video1 {
+    opacity: 1;
+    z-index: 10;
+}
+.video2 {
+    opacity: 0;
+    z-index: 1;
+}
+.video3 {
+    opacity: 0;
+    z-index: 1;
+}
+.video4 {
+    opacity: 0;
+    z-index: 1;
+}
+
+.carousel-container {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(255, 250, 244);
+    border: 2px solid gray;
+    height: fit-content;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.carousel-text > p{
+    font-size: 40px;
+    margin-top: 15px;
+    margin-left: 15px;
+    margin-bottom: 0px;
+}
+
+/* styling for top 25 recipes carousal section of landing page */
+.recipe-carousel {
+    --items: 6;
+    --carousel-duration: 30s;
+    --carousel-width: 100vw;
+    --carousel-item-width: 150px;
+    --carousel-item-height: 200px;
+    --carousel-item-gap: 20px;
+
+    position: relative;
+    z-index: 10;
+    overflow-x: clip;
+    width: var(--carousel-width);
+    height: calc((0.3*var(--carousel-item-height)) + var(--carousel-item-height));
+
+    /* hover over image freezes carousel */
+    &:hover > img {
+        animation-play-state: paused;
+    }
+}
+
+/* styling for each image */
+.recipe-carousel img {
+    border: 2px solid black; /* border: width style color */
+    border-radius: 2%;
+    box-shadow: 5px 5px 10px 2px rgba(92, 92, 92, 0.3);
+
+    top: 50%;
+    transform: translateY(-50%);
+    left: calc(-1 * (var(--carousel-item-width) + var(--carousel-item-gap)));
+    width: var(--carousel-item-width);
+    height: var(--carousel-item-height);
+    display: grid;
+    grid-template-rows: 200px auto 1fr auto;
+    position: absolute;
+    
+    animation: scroll-horizontal var(--carousel-duration) linear infinite;
+    animation-delay: calc(var(--carousel-duration) / var(--items) * 1 * var(--i) * -1);
+    &:nth-child(1) {
+		--i: 0;
+	}
+	&:nth-child(2) {
+		--i: 1;
+	}
+	&:nth-child(3) {
+		--i: 2;
+	}
+    &:nth-child(4) {
+		--i: 3;
+	}
+    &:nth-child(5) {
+		--i: 4;
+	}
+    &:nth-child(6) {
+		--i: 5;
+	}
+}
+
+@keyframes scroll-horizontal {
+    100% {
+        transform: translateX(calc(
+            1 * (var(--items) * (var(--carousel-item-width) + var(--carousel-item-gap)))
+        )) translateY(-50%);
+    }
+}
+
+/* nav css */
+
+/*  
 .hero {
     width: 100%;
     min-height: 100vh;
     background: #ffe4c4cb;
     color: #525252;
 }
+*/
 nav {
     background: #3c362ecb ;
-    width: 100%;
+    width: 90%;
     padding: 0px 5%;
-    height: 75px;
+    height: 78px;
     display: flex;
     align-items: stretch;
     justify-content: flex-start;
@@ -45,29 +186,13 @@ nav {
 }
 
 .logo-name {
-color:#fff;
-font-size: 21px;
-font-weight: 700;
-letter-spacing: 0.5px;
-white-space: nowrap; 
+    color:#fff;
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    white-space: nowrap; 
 }
 
-.pfp {
-    width: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-}
-.pfp-struct:hover .pfp {
-    outline: 3px solid #fff;
-}
-
-.pfp-struct {
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding: 0 14px;
-    transition: background 0.2s;
-}
 nav ul {
     display: flex;
     align-items: stretch;
@@ -112,41 +237,10 @@ nav ul li a:hover {
     z-index: 100;
 }
 
-.pfp-struct:hover .drop-down-struct {
-    max-height: 350px;
-}
-
-.pfp-struct:hover{
-    background-color: #332e27cb;
-}
-
-.pfp-struct:hover .drop-down-struct .user-info h2 {
-    color:#332e27cb;
-}
-
 .drop-down {
     background: #fff;
     padding: 10px 0;
     margin: 0;
-}
-.user-info {
-    display: flex;
-    align-items: center;
-    padding: 0 8px;
-}
-.user-info h2 {
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #332e27cb;
-}
-
-.user-info img{
-    width: 50px;
-    border-radius: 50%;
-    padding: 8px ;
-
 }
 .drop-down hr{
     border: 0;
@@ -167,6 +261,7 @@ nav ul li a:hover {
 }
 .drop-down-link:hover{
     background-color: #696969;
+    cursor: pointer;
 }
 
 .drop-down-link p {
@@ -176,7 +271,7 @@ nav ul li a:hover {
 .drop-down-link:hover p{
     font-weight: 400;
     color: #fff;
-
+    cursor: pointer;
 }
 .find-body {
     position: relative;
@@ -193,7 +288,7 @@ nav ul li a:hover {
     overflow: hidden;
     transition: max-height 0.4s;
     background: #fff; 
-    border-radius: 4px; 
+    border-radius: 2px; 
     box-shadow: 0 6px 10px rgba(0,0,0,0.1);
     z-index: 100;
 }
@@ -205,24 +300,25 @@ nav ul li a:hover {
     padding: 8px 15px;
     margin: 0;
     font-size: 13px;
+    cursor: pointer;
 }
 .f-drop-down-link:hover{
     background-color: #696969;
+    cursor: pointer;
 }
 
 .f-drop-down-link p {
     width: 100%;
-    cursor: pointer;
-
 }
 
 .f-drop-down-link:hover p{
     font-weight: 400;
     color: #fff;
-
+    cursor: pointer;
 }
 .find-body:hover .find-struct {
     max-height: 200px;
+    cursor: pointer;
 }
 
 .search-bar {
@@ -257,103 +353,4 @@ nav ul li a:hover {
     margin-left: 6px;
     cursor: pointer;
     flex-shrink: 0;
-}
-
-.plate-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    padding: 0 14px;
-    height: 100%;
-    transition: background 0.2s;
-}
-
-.plate-btn:hover {
-    background-color: #332e27cb;
-}
-
-.plate-badge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #d4d2d2;
-    border: 3px solid #ffffffcb;
-    border-radius: 20px;
-    padding: 5px 14px 5px 8px;
-    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-}
-
-.plate-badge-overlay {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #ffa806;
-    outline: rgb(0, 0, 0) solid 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    color: #000000;
-    font-weight: 300;
-    transition: background 0.2s, transform 0.2s;
-}
-
-.plate-btn:hover .plate-badge-overlay {
-    background: #b3cc27;
-    color: #ffffff;
-    transform: scale(1.1);
-}
-.plate-badge-label {
-    color: #3c362e;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-}
-.plate-btn:hover .plate-badge {
-    background: #27cc35;
-    border-color: #22ca22;
-    box-shadow: 0 0 0 2px #fcfcfcdf;
-}
-
-.plate-btn:hover .plate-badge-label {
-    color: #ffffff;
-    
-}
-.plate-icon {
-    width: 36px;
-    height: 36px;
-    transition: transform 0.3s;
-}
-
-.plate-btn:hover .plate-icon circle {
-    stroke: #fff;
-}
-
-.plate-btn:hover .plate-icon {
-    transform: rotate(15deg);
-}
-
-.plate-entry {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.entry-options {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    width: 150px;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s;
-    background: #fff;
-    border-radius: 4px;
-    box-shadow: 0 6px 10px rgba(0,0,0,0.12);
-    z-index: 100;
-}
-
-.plate-entry:hover .entry-options {
-    max-height: 200px;
 }
