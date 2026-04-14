@@ -19,15 +19,16 @@
 
                 <div class = "profile-info">
                     <h1 class = "username">{{ user.username }}</h1>
-                    <div class = "stats">
-                        <div class = "stat">
-                            <span class = "stat-number">{{ follower_count }}</span>
-                            <span class = "stat-label"> followers </span>
-                        </div>
-                        <div class = "stat">
-                            <span class = "stat-number">{{ following_count }}</span>
-                            <span class = "stat-label"> following </span>
-                        </div>
+                    <div class="stats">
+                        <button type="button" class="stat clickable-stat" id="followers-trigger">
+                            <span class="stat-number">{{ follower_count }}</span>
+                            <span class="stat-label">followers</span>
+                        </button>
+                    
+                        <button type="button" class="stat clickable-stat" id="following-trigger">
+                            <span class="stat-number">{{ following_count }}</span>
+                            <span class="stat-label">following</span>
+                        </button>
                     </div>
                     {% if current_user_id != user.user_id %}
                         {% if following_status %}
@@ -45,14 +46,27 @@
             <section class="content-section">
                 <div class="bio-section">
                     <p id="bio">This is my bio. I love recipes!</p>
-                    <button id="edit-profile-button">Edit Profile</button>
+                    {% if current_user_id == user.user_id %}
+                        <button id="edit-profile-button">Edit Profile</button>
+                    {% endif %}
                 </div>
+            
                 <div id="backdrop"></div> <!-- signify to user no background interaction is allowed while popup is displayed-->
+            
                 <div class="edit-popup-card" id="edit-overlay">
                   <p class="popup-title">Edit bio:</p>
                   <textarea id="bio-text" name="profile bio" maxlength="300"></textarea>
                   <p class="popup-text">Max chars: 300</p>
                   <button id="save-profile-button">Save</button>
+                </div>
+            
+                <div class="users-popup-card" id="users-overlay">
+                    <div class="users-popup-header">
+                        <h3 id="users-popup-title">Followers</h3>
+                        <button type="button" class="close-popup-btn" id="close-users-popup">&times;</button>
+                    </div>
+            
+                    <div class="users-popup-list" id="users-popup-list"></div>
                 </div>
             </section>
 
@@ -93,6 +107,18 @@
             </div>
         </aside>
     </main>
+
+    <script id="followers-data" type="application/json">
+        {{ followers | tojson }}
+    </script>
+    
+    <script id="following-data" type="application/json">
+        {{ following | tojson }}
+    </script>
+    <script id="profile-owner-id" type="application/json">
+        {{ user.user_id | tojson }}
+    </script>
+
     <script src="/static/js/profile.js"></script>
 </body>
 </html>
