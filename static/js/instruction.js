@@ -6,9 +6,9 @@ let stepCount = 0;
 
 // move forward one slide
 function goNext() {
-    // need user to select all drop downs to get to next step
     if (currentStep === 1) {
-        if (!document.getElementById("prepTime").value ||
+        if (!document.getElementById("recipeName").value.trim() ||
+            !document.getElementById("prepTime").value ||
             !document.getElementById("cookTime").value ||
             !document.getElementById("servings").value) {
             alert("Please fill in all fields before continuing.");
@@ -36,6 +36,17 @@ function addIngredient() {
     input.value = "";
     drawIngredients();
 }
+
+// photo preview
+document.getElementById("recipePhoto").addEventListener("change", function() {
+    let file = this.files[0];
+    if (file) {
+        document.getElementById("previewImg").src = URL.createObjectURL(file);
+        document.getElementById("previewImg").style.display = "block";
+        document.querySelector(".upload-overlay").style.display = "none";
+        document.querySelector(".upload-card").classList.add("has-image");
+    }
+});
 
 document.getElementById("ingredientInput").addEventListener("keydown", function(e) {
     if (e.key === "Enter") {
@@ -103,12 +114,79 @@ function addStep() {
 // start with one step already there
 addStep();
 
+// map dropdown labels to integers for the database
+const prepTimeMap  = { minimal: 10,  standard: 25, extensive: 45 };
+const cookTimeMap  = { minimal: 15,  standard: 35, extensive: 75 };
+const servingsMap  = { minimal: 2,   standard: 4,  extensive: 8  };
+
+// collect step cards into an array of {title, description}
+function collectSteps() {
+    let cards = document.querySelectorAll(".step-card");
+    let steps = [];
+    for (let i = 0; i < cards.length; i++) {
+        let title = cards[i].querySelector(".step-title-input").value.trim();
+        let detail = cards[i].querySelector(".step-detail-input").value.trim();
+        steps.push({ title: title, detail: detail });
+    }
+    return steps;
+}
+
 // save
 function saveRecipe() {
-    console.log("Prep:", document.getElementById("prepTime").value);
-    console.log("Cook:", document.getElementById("cookTime").value);
-    console.log("Servings:", document.getElementById("servings").value);
-    console.log("Dietary:", document.getElementById("dietary").value);
-    console.log("Meal type:", document.getElementById("mealType").value);
-    console.log("Ingredients:", ingredients);
+    if (ingredients.length === 0) {
+        alert("Please add at least one ingredient.");
+        return;
+    }
+
+    let steps = collectSteps();
+    let hasContent = false;
+    for (let i = 0; i < steps.length; i++) {
+        if (steps[i].detail !== "") { hasContent = true; break; }
+    }
+    if (!hasContent) {
+        alert("Please describe at least one step.");
+        return;
+    }
+
+    // format directions as plain text for the database
+    let directions = "";
+    for (let i = 0; i < steps.length; i++) {
+        directions += "Step " + (i + 1);
+        if (steps[i].title) directions += ": " + steps[i].title;
+        directions += "\n" + steps[i].detail + "\n\n";
+    }
+
+    let prepVal = document.getElementById("prepTime").value;
+    let cookVal = document.getElementById("cookTime").value;
+    let servVal = document.getElementById("servings").value;
+
+    let formData = new FormData();
+    formData.append("recipe_name",        document.getElementById("recipeName").value.trim());
+    formData.append("prep_time",          prepTimeMap[prepVal]);
+    formData.append("cook_time",          cookTimeMap[cookVal]);
+    formData.append("servings",           servingsMap[servVal]);
+    formData.append("dietary_preference", document.getElementById("dietary").value);
+    formData.append("ingredients",        ingredients.join(", "));
+    formData.append("directions",         directions.trim());
+
+    let photoFile = document.getElementById("recipePhoto").files[0];
+    if (photoFile) {
+        formData.append("recipe_pic", photoFile);
+    }
+
+    fetch("/recipes/new", {
+        method: "POST",
+        body: formData
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.success) {
+            window.location.href = "/home";
+        } else {
+            alert("Error saving recipe: " + data.error);
+        }
+    })
+    .catch(function() {
+        alert("Something went wrong. Please try again.");
+    });
 }

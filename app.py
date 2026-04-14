@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 import pymysql
+import os
+import uuid
 from config import DB_CONFIG, SECRET_KEY
 
 app = Flask(__name__)
@@ -146,6 +148,55 @@ def users():
 @app.route('/recipes')
 def recipe_page():
     return render_template('recipes_page.html')
+
+@app.route('/recipes/new', methods=['GET', 'POST'])
+def new_recipe():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'GET':
+        return render_template('instructions.html')
+
+    recipe_name        = request.form.get('recipe_name', '').strip()
+    ingredients        = request.form.get('ingredients', '').strip()
+    directions         = request.form.get('directions', '').strip()
+    prep_time          = int(request.form.get('prep_time'))
+    cook_time          = int(request.form.get('cook_time'))
+    servings           = int(request.form.get('servings'))
+    dietary_preference = request.form.get('dietary_preference', 'no-restriction')
+
+    if not recipe_name or not ingredients or not directions:
+        return {'success': False, 'error': 'Missing required fields.'}, 400
+
+    # handle optional photo upload
+    recipe_pic = None
+    photo = request.files.get('recipe_pic')
+    if photo and photo.filename:
+        ext = os.path.splitext(photo.filename)[1].lower()
+        filename = uuid.uuid4().hex + ext
+        upload_folder = os.path.join(app.root_path, 'static', 'media', 'recipe_pics')
+        os.makedirs(upload_folder, exist_ok=True)
+        photo.save(os.path.join(upload_folder, filename))
+        recipe_pic = 'media/recipe_pics/' + filename
+
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''INSERT INTO recipes
+                   (user_id, recipe_name, ingredients, directions,
+                    prep_time, cook_time, servings, dietary_preference, recipe_pic)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+                (session['user_id'], recipe_name, ingredients, directions,
+                 prep_time, cook_time, servings, dietary_preference, recipe_pic)
+            )
+        db.commit()
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+    finally:
+        db.close()
+
+    return {'success': True}
 
 @app.route('/meals')
 def meal_page():

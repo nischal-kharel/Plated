@@ -24,6 +24,11 @@
                 <p class="slide-sub">Give us a general idea of your recipe</p>
 
                 <div class="field-group">
+                    <label class="field-label">Recipe Name</label>
+                    <input type="text" id="recipeName" class="styled-input" placeholder="Give your recipe a name..." maxlength="255">
+                </div>
+
+                <div class="field-group">
                     <label class="field-label">Prep?</label>
                     <select id="prepTime" class="styled-select">
                         <option value="">Select prep time</option>
@@ -64,9 +69,18 @@
                 <p class="slide-sub">Help others find your recipe</p>
 
                 <div class="field-group">
+                    <label class="field-label">Recipe Photo</label>
+                    <label class="upload-card" for="recipePhoto">
+                        <img id="previewImg" src="" alt="recipe preview">
+                        <div class="upload-overlay">+</div>
+                    </label>
+                    <input type="file" id="recipePhoto" accept="image/*">
+                </div>
+
+                <div class="field-group">
                     <label class="field-label">Dietary Restrictions</label>
                     <select id="dietary" class="styled-select">
-                        <option value="">Select dietary type</option>
+                        <option value="no-restriction" selected>No Restriction</option>
                         <option value="vegetarian">Vegetarian</option>
                         <option value="pescatarian">Pescatarian</option>
                         <option value="vegan">Vegan</option>
