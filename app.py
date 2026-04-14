@@ -66,6 +66,75 @@ def is_following(follower_id, following_id):
     finally:
         db.close()
 
+def get_followers(user_id, current_user_id=None):
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''
+                SELECT 
+                    u.user_id,
+                    u.username,
+                    CASE 
+                        WHEN u.user_id = %s THEN TRUE
+                        ELSE EXISTS (
+                            SELECT 1
+                            FROM follows viewer_follows
+                            WHERE viewer_follows.follower_id = %s
+                              AND viewer_follows.following_id = u.user_id
+                        )
+                    END AS is_followed_by_current_user
+                FROM follows f
+                JOIN users u ON f.follower_id = u.user_id
+                WHERE f.following_id = %s
+                ORDER BY u.username ASC
+                ''',
+                (current_user_id, current_user_id, user_id)
+            )
+            followers = cursor.fetchall()
+
+            for user in followers:
+                user['is_current_user'] = (user['user_id'] == current_user_id)
+
+            return followers
+    finally:
+        db.close()
+
+
+def get_following(user_id, current_user_id=None):
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''
+                SELECT 
+                    u.user_id,
+                    u.username,
+                    CASE 
+                        WHEN u.user_id = %s THEN TRUE
+                        ELSE EXISTS (
+                            SELECT 1
+                            FROM follows viewer_follows
+                            WHERE viewer_follows.follower_id = %s
+                              AND viewer_follows.following_id = u.user_id
+                        )
+                    END AS is_followed_by_current_user
+                FROM follows f
+                JOIN users u ON f.following_id = u.user_id
+                WHERE f.follower_id = %s
+                ORDER BY u.username ASC
+                ''',
+                (current_user_id, current_user_id, user_id)
+            )
+            following = cursor.fetchall()
+
+            for user in following:
+                user['is_current_user'] = (user['user_id'] == current_user_id)
+
+            return following
+    finally:
+        db.close()
+
 def get_all_users():
     db = get_db()
     try:
@@ -94,12 +163,16 @@ def profile():
     user = get_user_by_id(user_id)
     follower_count = get_follower_count(user_id)
     following_count = get_following_count(user_id)
+    followers = get_followers(user_id, user_id)
+    following = get_following(user_id, user_id)
 
     return render_template(
         'profile.html',
         user=user,
         follower_count=follower_count,
         following_count=following_count,
+        followers=followers,
+        following=following,
         current_user_id=user_id,
         following_status=False
     )
@@ -120,6 +193,8 @@ def view_profile(user_id):
 
     follower_count = get_follower_count(user_id)
     following_count = get_following_count(user_id)
+    followers = get_followers(user_id, current_user_id)
+    following = get_following(user_id, current_user_id)
 
     following_status = False
     if current_user_id != user_id:
@@ -129,7 +204,9 @@ def view_profile(user_id):
         'profile.html',
         user=user,
         follower_count=follower_count,
-        following_count=following_count, 
+        following_count=following_count,
+        followers=followers,
+        following=following,
         current_user_id=current_user_id,
         following_status=following_status
     )
@@ -280,9 +357,15 @@ def follow_user(user_id):
         flash('Please log in first.')
         return redirect(url_for('login'))
     
+    return_profile_id = request.form.get('return_profile_id', type=int)
+
     if current_user_id == user_id:
         flash('You cannot follow yourself.')
-        return redirect(url_for('view_profile', user_id = user_id))
+        if return_profile_id:
+            if return_profile_id == current_user_id:
+                return redirect(url_for('profile'))
+            return redirect(url_for('view_profile', user_id=return_profile_id))
+        return redirect(url_for('view_profile', user_id=user_id))
 
     db = get_db()
     try:
@@ -297,6 +380,12 @@ def follow_user(user_id):
         db.commit()
     finally:
         db.close()
+
+    if return_profile_id:
+        if return_profile_id == current_user_id:
+            return redirect(url_for('profile'))
+        return redirect(url_for('view_profile', user_id=return_profile_id))
+
     return redirect(url_for('view_profile', user_id=user_id))
 
 @app.route('/unfollow/<int:user_id>', methods=['POST'])
@@ -306,6 +395,8 @@ def unfollow_user(user_id):
     if not current_user_id:
         flash('Please log in first.')
         return redirect(url_for('login'))
+    
+    return_profile_id = request.form.get('return_profile_id', type=int)
     
     db = get_db()
     try:
@@ -320,6 +411,12 @@ def unfollow_user(user_id):
         db.commit()
     finally:
         db.close()
+
+    if return_profile_id:
+        if return_profile_id == current_user_id:
+            return redirect(url_for('profile'))
+        return redirect(url_for('view_profile', user_id=return_profile_id))
+
     return redirect(url_for('view_profile', user_id=user_id))
 
 @app.route('/mylists')
