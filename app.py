@@ -271,6 +271,49 @@ def unfollow_user(user_id):
         db.close()
     return redirect(url_for('view_profile', user_id=user_id))
 
+@app.route('/mylists')
+def mylists():
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('Please log in first.')
+        return redirect(url_for('login'))
+
+    # test 
+    user_lists_names = [
+        {'id': 1, 'name': 'Want to Make'},
+        {'id': 2, 'name': 'Favorites'},
+        {'id': 3, 'name': 'Vegetarian'}
+    ]
+    return render_template('mylists.html', list_names=user_lists_names)
+
+# Create new user list
+@app.route('/createlist', methods=['POST'])
+def createlist():
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('Please log in first.')
+        return redirect(url_for('login'))
+    
+    list_name = request.form.get('list-name')
+    # check if list name is taken, then show error message and redirect
+    # otherwise create new empty list and reload with new list template
+    return redirect(url_for('mylists'))
+
+# Delete User List
+@app.route('/delete', methods=['POST'])
+def delete_list():
+    list_id = request.form.get('list_id')
+    if list_id:
+        db = get_db()
+        try:
+            with db.cursor() as cursor:
+                # table doesn't exist yet
+                cursor.execute("DELETE FROM lists WHERE id = %s", (list_id,))
+            db.commit()
+        finally:
+            db.close()
+    return redirect(url_for('mylists'))
+
 @app.route('/logout')
 def logout():
     session.clear()

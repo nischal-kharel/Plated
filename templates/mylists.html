@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Lists</title>
+  <link rel="stylesheet" type="text/css" href="../static/css/mylists.css">
+  <link rel="stylesheet" type="text/css" href="../static/css/navbar.css">
+</head>
+<body>
+    <header>My Lists</header>
+  <main>
+    <div class="main-content">
+      <div class="all-lists">
+      {% block content %}
+        {% for item in list_names %}
+        <div class="lists-container" data-list-id="{{ item.id }}">
+          <div class="list-header">
+            <h2>{{ item.name }}</h2>
+            <button class="view-list-button">View list</button>
+          </div>
+        <div class="list">
+          <!-- preview images of recipes -->
+           <img src="https://placehold.co/220x300" alt="preview 1" class="recipe-preview" />
+           <img src="https://placehold.co/220x300" alt="preview 2" class="recipe-preview" />
+           <img src="https://placehold.co/220x300" alt="preview 3" class="recipe-preview" />
+           <img src="https://placehold.co/220x300" alt="preview 4" class="recipe-preview" />
+        </div>
+      </div>
+        {% endfor %}
+      {% endblock %}
+      </div>
+      
+      <div class="right-content">
+        <button id="new-list-button">Start new list...</button>
+      </div>
+      
+      <div id="backdrop-first"></div>
+      <form name="new-list" class="new-list-popup" id="new-list-overlay" action="/createlist" method="POST">
+        <p class="popup-title">New List</p>
+        <label for="list-name">List Name:</label>
+        <input type="text" id="list-name" placeholder="ex: Favorite Recipes" maxlength="20" required>
+        <div class="button-container">
+          <button id="cancel-button">Cancel</button>
+          <button type="submit" id="create-list-button">Create list</button>
+        </div>
+      </form>
+      <div class="view-list-popup" id="view-list-overlay">
+        <div class="list-header">
+          <p class="view-list-title"></p>
+          <div class="view-list-buttons">
+            <button id="delete-list-button">Delete List</button>
+            <button id="edit-list-button">Edit List</button>
+            <button id="close-list-button">Close</button>
+          </div>
+        </div>
+        <div class="recipe-container">
+          <div class="recipe-container-row">
+            <img src="https://placehold.co/220x300" alt="preview 1" class="recipe-preview" />
+          </div>
+        </div>
+      </div>
+      <div id="backdrop-second"></div>
+      <div class="validate-delete-popup" id="validate-delete-overlay">
+          <p class="validate-delete-title">Are you sure you want to delete this list?</p>
+          <div class="validate-delete-buttons">
+            <button id="cancel-delete-button">Cancel</button>
+            <form action="{{ url_for('delete_list') }}" method="POST">
+              <input type="hidden" name="list_id" id="delete-list-id" value="">
+              <button type="submit" id="permanent-delete-list-button">Delete List</button>
+            </form>
+          </div>
+      </div>
+
+    </div>
+  </main>
+<script src="/static/js/mylists.js"></script>
+</body>
+</html>
