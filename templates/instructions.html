@@ -11,64 +11,127 @@
     <div class="instructions-card">
 
         <div class="card-header">
-            <h2 class="page-title">Recipe Instructions</h2>
+            <span class="step-indicator" id="stepIndicator">Step 1 of 4</span>
             <span class="close-btn" onclick="history.back()">x</span>
         </div>
-        <form id="instructionsForm">
-            <!-- cook time row -->
-            <div class="recipe-specifics">
-                <div class="specific-option">
-                    <label class="field-label">Prep Time</label>
-                    <div class="time-input-row">
-                        <input type="number" id="prepMins" min="0" placeholder="0" class="time-input">
-                        <span class="time-unit">min</span>
-                    </div>
+
+        <div class="slider-wrapper">
+        <div class="slider-track" id="sliderTrack">
+
+            <!-- step 1: basics -->
+            <div class="slide">
+                <h2 class="slide-title">Let's start with the basics...</h2>
+                <p class="slide-sub">Give us a general idea of your recipe</p>
+
+                <div class="field-group">
+                    <label class="field-label">Prep?</label>
+                    <select id="prepTime" class="styled-select">
+                        <option value="">Select prep time</option>
+                        <option value="minimal">Minimal (5–10 min)</option>
+                        <option value="standard">Standard (15–30 min)</option>
+                        <option value="extensive">Extensive (45+ min)</option>
+                    </select>
                 </div>
-                <div class="specific-option">
-                    <label class="field-label">Cook Time</label>
-                    <div class="time-input-row">
-                        <input type="number" id="cookMins" min="0" placeholder="0" class="time-input">
-                        <span class="time-unit">min</span>
-                    </div>
+
+                <div class="field-group">
+                    <label class="field-label">Cook?</label>
+                    <select id="cookTime" class="styled-select">
+                        <option value="">Select cook time</option>
+                        <option value="minimal">Minimal (5–15 min)</option>
+                        <option value="standard">Standard (20–45 min)</option>
+                        <option value="extensive">Extensive (1+ hours)</option>
+                    </select>
                 </div>
-                <div class="specific-option">
-                    <label class="field-label">Servings</label>
-                    <div class="time-input-row">
-                        <input type="number" id="servings" min="1" placeholder="1" class="time-input">
-                        <span class="time-unit">ppl</span>
-                    </div>
+
+                <div class="field-group">
+                    <label class="field-label">Servings?</label>
+                    <select id="servings" class="styled-select">
+                        <option value="">Select servings</option>
+                        <option value="minimal">Minimal (1–2 ppl)</option>
+                        <option value="standard">Standard (3–6 ppl)</option>
+                        <option value="extensive">Extensive (8+ ppl)</option>
+                    </select>
+                </div>
+
+                <div class="slide-footer">
+                    <button class="next-btn" onclick="goNext()">Next</button>
                 </div>
             </div>
 
-            <div class="two-col">
-                <!-- ingredients -->
-                <div class="section">
-                    <label class="field-label">Ingredients</label>
-                    <p class="field-hint">One per line</p>
-                    <textarea id="ingredients" placeholder="2 cups flour&#10;1 tsp salt&#10;3 eggs"></textarea>
+            <!-- step 2: specifics -->
+            <div class="slide">
+                <h2 class="slide-title">Now with the specifics...</h2>
+                <p class="slide-sub">Help others find your recipe</p>
+
+                <div class="field-group">
+                    <label class="field-label">Dietary Restrictions</label>
+                    <select id="dietary" class="styled-select">
+                        <option value="">Select dietary type</option>
+                        <option value="vegetarian">Vegetarian</option>
+                        <option value="pescatarian">Pescatarian</option>
+                        <option value="vegan">Vegan</option>
+                        <option value="kosher">Kosher</option>
+                        <option value="halal">Halal</option>
+                        <option value="nut-free">Nut-free</option>
+                        <option value="gluten-free">Gluten-free</option>
+                    </select>
                 </div>
 
-                <!-- steps -->
-                <div class="section">
-                    <label class="field-label">Steps</label>
-                    <p class="field-hint">One per line</p>
-                    <textarea id="steps" placeholder="Preheat oven to 350°F&#10;Mix dry ingredients&#10;Add wet ingredients"></textarea>
+                <div class="field-group">
+                    <label class="field-label">Meal Type</label>
+                    <select id="mealType" class="styled-select">
+                        <option value="">Select meal type</option>
+                        <option value="breakfast">Breakfast</option>
+                        <option value="lunch">Lunch</option>
+                        <option value="dinner">Dinner</option>
+                        <option value="dessert">Dessert</option>
+                    </select>
                 </div>
 
-            </div>
-            <!-- notes -->
-            <div class="section">
-                <label class="field-label">Notes</label>
-                <textarea id="recipeNotes" placeholder="Any extra tips, substitutions, or notes..."></textarea>
-            </div>
-
-            <div class="form-footer">
-                <button type="submit">Save Recipe</button>
+                <div class="slide-footer">
+                    <button class="back-btn" onclick="goBack()">Back</button>
+                    <button class="next-btn" onclick="goNext()">Next</button>
+                </div>
             </div>
 
-        </form>
+            <!-- step 3: ingredients -->
+            <div class="slide">
+                <h2 class="slide-title">Then to the ingredients...</h2>
+                <p class="slide-sub">Add each ingredient one by one</p>
+
+                <div class="add-row">
+                    <input type="text" id="ingredientInput" placeholder="Enter ingredient...">
+                    <button type="button" class="add-btn" onclick="addIngredient()">Add</button>
+                </div>
+
+                <div class="item-box" id="ingredientList">
+                    <p class="empty-hint">No ingredients added yet</p>
+                </div>
+
+                <div class="slide-footer">
+                    <button class="back-btn" onclick="goBack()">Back</button>
+                    <button class="next-btn" onclick="goNext()">Next</button>
+                </div>
+            </div>
+            <!-- step 4: steps -->
+            <div class="slide">
+                <h2 class="slide-title">And finally, the steps...</h2>
+                <p class="slide-sub">Walk through each step of your recipe</p>
+
+                <div id="stepsContainer"></div>
+
+                <button type="button" class="add-step-btn" onclick="addStep()">+ Add Step</button>
+
+                <div class="slide-footer">
+                    <button class="back-btn" onclick="goBack()">Back</button>
+                    <button class="next-btn save-btn" onclick="saveRecipe()">Save Recipe</button>
+                </div>
+            </div>
+
+        </div>
+        </div>
     </div>
 </main>
-<script src="/static/js/instructions.js"></script>
+<script src="/static/js/instruction.js"></script>
 </body>
 </html>
