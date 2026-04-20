@@ -150,7 +150,66 @@ def landing():
 
 @app.route('/home')
 def home():
+    user_id = session.get('user_id')
+
+    if not user_id:
+        flash('Please log in first.')
+        return redirect(url_for('login'))
     return render_template('home.html')
+
+# trending recipes section
+@app.route('/get_recipes')
+def get_recipes():
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''SELECT recipe_id, recipe_name, recipe_pic
+                FROM recipes
+                ORDER BY created_at DESC 
+                LIMIT 20'''
+            )
+            recipes = cursor.fetchall()
+    finally:
+        db.close()
+    return {'recipes': recipes}
+
+# Friend Activity section, for now it will take all recipes from the database
+# will update laterr
+@app.route('/get_feed_recipes')
+def get_feed_recipes():
+    user_id = session.get('user_id')
+    if not user_id:
+        return {'recipes': []}
+    
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''SELECT r.recipe_id, r.recipe_name, r.recipe_pic, u.username
+                FROM recipes r
+                JOIN users u ON r.user_id = u.user_id
+                ORDER BY r.created_at DESC
+                LIMIT 20'''
+            )
+            recipes = cursor.fetchall()
+
+    finally:
+        db.close()
+    return {'recipes': recipes}
+
+@app.route('/recipe/<int:recipe_id>')
+def recipe_view(recipe_id):
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute('SELECT * FROM recipes WHERE recipe_id = %s', (recipe_id,))
+            recipe = cursor.fetchone()
+    finally:
+        db.close()
+    if recipe is None:
+        return redirect(url_for('home'))
+    return render_template('recipe_view.html', recipe=recipe)
 
 @app.route('/profile')
 def profile():
