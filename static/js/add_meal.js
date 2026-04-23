@@ -149,10 +149,14 @@ document.getElementById("tagBox").addEventListener("click", function(e) {
 });
 
 // submit
+// document.getElementById("mealForm").addEventListener("submit", function(e) {
+//     e.preventDefault();
+//     console.log("Meal:", document.getElementById("mealTitle").value);
+//     console.log("Caption:", document.getElementById("mealCaption").value);
+//     console.log("Tags:", tags);
+//     console.log("Rating:", rating);
+// });
 document.getElementById("mealForm").addEventListener("submit", function(e) {
     e.preventDefault();
-    console.log("Meal:", document.getElementById("mealTitle").value);
-    console.log("Caption:", document.getElementById("mealCaption").value);
-    console.log("Tags:", tags);
-    console.log("Rating:", rating);
+    window.location.href = "/journal";
 });

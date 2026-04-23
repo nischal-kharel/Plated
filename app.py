@@ -336,7 +336,11 @@ def new_recipe():
 
 @app.route('/meals')
 def meal_page():
-    return render_template('meal_page.html')
+    return render_template('add_meal_page.html')
+
+@app.route('/journal')
+def journal_page():
+    return render_template('journal.html')
 
 # Auth Routes:
 
