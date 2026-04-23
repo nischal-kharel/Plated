@@ -5,10 +5,6 @@ const HALF = "/static/media/ratingimages/leftbrokenplate.png";
 let rating = 0;
 let tags = [];
 
-// set today's date
-let today = new Date();
-document.getElementById("eatenDate").value = today.toISOString().split("T")[0];
-
 // photo preview
 document.getElementById("mealPhoto").addEventListener("change", function() {
     let file = this.files[0];
@@ -20,27 +16,10 @@ document.getElementById("mealPhoto").addEventListener("change", function() {
     }
 });
 
-// journal toggle
-document.getElementById("addToJournal").addEventListener("change", function() {
-    if (this.checked) {
-        document.getElementById("addToJournalRow").classList.add("hidden");
-        document.getElementById("journalDetail").classList.add("visible");
-    }
-});
-
-document.getElementById("eatenCheck").addEventListener("change", function() {
-    this.checked = true;
-    document.getElementById("journalDetail").classList.remove("visible");
-    document.getElementById("addToJournalRow").classList.remove("hidden");
-    document.getElementById("addToJournal").checked = false;
-});
-
 // draws the 5 plates in the footer and the small ones next to date 
 function drawPlates(displayValue) {
     let box = document.getElementById("pltratingBox");
-    let mini = document.getElementById("miniRating");
     box.innerHTML = "";
-    mini.innerHTML = "";
 
     for (let i = 1; i <= 5; i++) {
         // decide which image and opacity to use
@@ -62,13 +41,6 @@ function drawPlates(displayValue) {
         plate.style.cursor = "pointer";
         plate.setAttribute("data-index", i);
         box.appendChild(plate);
-
-        // small plate next to journal row
-        let miniPlate = document.createElement("img");
-        miniPlate.src = src;
-        miniPlate.style.opacity = opacity;
-        miniPlate.style.width = "20px";
-        mini.appendChild(miniPlate);
     }
 }
 
@@ -104,7 +76,6 @@ document.getElementById("pltratingBox").addEventListener("click", function(e) {
         }
         document.getElementById("pltratingText").textContent = rating + " out of 5";
         document.getElementById("pltratingClear").style.display = "inline";
-        document.getElementById("miniRating").style.display = "flex";
         drawPlates(rating);
     }
 });
@@ -114,7 +85,6 @@ document.getElementById("pltratingClear").addEventListener("click", function() {
     rating = 0;
     document.getElementById("pltratingText").textContent = "";
     document.getElementById("pltratingClear").style.display = "none";
-    document.getElementById("miniRating").style.display = "none";
     drawPlates(0);
 });
 
