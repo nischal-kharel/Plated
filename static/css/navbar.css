@@ -356,3 +356,12 @@ nav ul li a:hover {
 .plate-entry:hover .entry-options {
     max-height: 200px;
 }
+
+.drop-down-link:last-child p {
+    color: #b13d3d;
+    font-weight: 600;
+}
+
+.drop-down-link:last-child:hover p {
+    color: #fff;
+}
