@@ -15,19 +15,21 @@
             <span class="close-btn" onclick= "history.back()">x</span>
         </div>
 
-        <form id="mealForm">
+        <form id="mealForm" enctype="multipart/form-data">
+            <input type="hidden" id="mealRatingInput" name="rating" value="">
+            <input type="hidden" id="mealTagsInput" name="tags" value="">
             <div class="card-body">
                 <div class="meal-photo">
                     <label class="upload-card" for="mealPhoto">
                         <img id="previewImg" src="" alt="meal preview">
                         <div class="upload-overlay">+</div>
                     </label>
-                    <input type="file" id="mealPhoto" accept="image/*">
+                    <input type="file" id="mealPhoto" name="journal_pic" accept="image/*">
                 </div>
                 
                 <div class="meal-right">
-                    <input type="text" id="mealTitle" placeholder="Type your meal...">
-                    <textarea id="mealCaption" placeholder="Share your thoughts..."></textarea>
+                    <input type="text" id="mealTitle" name="journal_name" placeholder="Type your meal...">
+                    <textarea id="mealCaption" name="caption" placeholder="Share your thoughts..."></textarea>
                 </div>
             </div>
 

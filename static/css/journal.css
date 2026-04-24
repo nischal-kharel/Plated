@@ -30,3 +30,95 @@ body {
     display: block;
     border-radius: 12px;
 }
+
+.empty-message {
+    font-size: 18px;
+    color: #222;
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: none;
+    z-index: 999;
+}
+
+.meal-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    max-width: 90vw;
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    display: none;
+    z-index: 1000;
+    box-sizing: border-box;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.meal-modal-content {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.meal-modal-content img {
+    width: 320px;
+    max-width: 40vw;
+    border-radius: 10px;
+    display: block;
+}
+
+.meal-modal-text {
+    flex: 1;
+}
+
+.close-modal {
+    border: none;
+    background: none;
+    font-size: 28px;
+    cursor: pointer;
+    float: right;
+}
+
+.modal-rating-wrap {
+    margin: 8px 0 14px 0;
+}
+
+#modal-rating-plates {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+#modal-rating-plates img {
+    width: 28px;
+    height: 28px;
+    display: block;
+}
+
+#modal-rating-text,
+#modal-caption,
+#modal-tags {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+}
+
+#delete-post-btn {
+    margin-top: 12px;
+    padding: 10px 16px;
+    background: #c94b4b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+#delete-post-btn:hover {
+    background: #b13d3d;
+}

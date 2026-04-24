@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import pymysql
 import os
 import uuid
+import json
 from config import DB_CONFIG, SECRET_KEY
 
 app = Flask(__name__)
@@ -336,11 +337,156 @@ def new_recipe():
 
 @app.route('/meals')
 def meal_page():
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('Please log in first.')
+        return redirect(url_for('login'))
     return render_template('add_meal_page.html')
+
+@app.route('/meals/save', methods=['POST'])
+def save_meal():
+    user_id = session.get('user_id')
+
+    if not user_id:
+        return {'success': False, 'error': 'Please log in first.'}, 401
+
+    journal_name = request.form.get('journal_name', '').strip()
+    caption = request.form.get('caption', '').strip()
+    rating_raw = request.form.get('rating', '').strip()
+
+    if not journal_name:
+        return {'success': False, 'error': 'Meal title is required.'}, 400
+
+    rating = None
+    if rating_raw:
+        try:
+            rating = float(rating_raw)
+        except ValueError:
+            return {'success': False, 'error': 'Invalid rating.'}, 400
+
+    tags_raw = request.form.get('tags', '[]')
+
+    try:
+        tags = json.loads(tags_raw)
+    except json.JSONDecodeError:
+        tags = []
+
+    journal_pic = None
+    photo = request.files.get('journal_pic')
+    if photo and photo.filename:
+        ext = os.path.splitext(photo.filename)[1].lower()
+        filename = uuid.uuid4().hex + ext
+        upload_folder = os.path.join(app.root_path, 'static', 'media', 'journal_pics')
+        os.makedirs(upload_folder, exist_ok=True)
+        photo.save(os.path.join(upload_folder, filename))
+        journal_pic = 'media/journal_pics/' + filename
+
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''
+                INSERT INTO journal_posts (user_id, journal_name, caption, journal_pic, rating)
+                VALUES (%s, %s, %s, %s, %s)
+                ''',
+                (user_id, journal_name, caption, journal_pic, rating)
+            )
+
+            journal_id = cursor.lastrowid
+
+            for tag_name in tags:
+                clean_tag = tag_name.strip()
+                if not clean_tag:
+                    continue
+
+                cursor.execute(
+                    '''
+                    INSERT INTO tags (tag_name)
+                    VALUES (%s)
+                    ON DUPLICATE KEY UPDATE tag_id = LAST_INSERT_ID(tag_id)
+                    ''',
+                    (clean_tag,)
+                )
+                tag_id = cursor.lastrowid
+
+                cursor.execute(
+                    '''
+                    INSERT IGNORE INTO journal_tags (journal_id, tag_id)
+                    VALUES (%s, %s)
+                    ''',
+                    (journal_id, tag_id)
+                )
+
+        db.commit()
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+    finally:
+        db.close()
+
+    return {'success': True}
 
 @app.route('/journal')
 def journal_page():
-    return render_template('journal.html')
+    user_id = session.get('user_id')
+
+    if not user_id:
+        flash('Please log in first.')
+        return redirect(url_for('login'))
+
+    meals = get_journal_posts_by_user(user_id)
+    return render_template('journal.html', meals=meals)
+
+def get_journal_posts_by_user(user_id):
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''
+                SELECT 
+                    jp.journal_id,
+                    jp.journal_name,
+                    jp.caption,
+                    jp.journal_pic,
+                    jp.rating,
+                    jp.created_at,
+                    GROUP_CONCAT(t.tag_name ORDER BY t.tag_name SEPARATOR ', ') AS tags
+                FROM journal_posts jp
+                LEFT JOIN journal_tags jt ON jp.journal_id = jt.journal_id
+                LEFT JOIN tags t ON jt.tag_id = t.tag_id
+                WHERE jp.user_id = %s
+                GROUP BY jp.journal_id, jp.journal_name, jp.caption, jp.journal_pic, jp.rating, jp.created_at
+                ORDER BY jp.created_at DESC
+                ''',
+                (user_id,)
+            )
+            return cursor.fetchall()
+    finally:
+        db.close()
+
+@app.route('/journal/delete/<int:journal_id>', methods=['POST'])
+def delete_journal_post(journal_id):
+    user_id = session.get('user_id')
+
+    if not user_id:
+        return {'success': False, 'error': 'Please log in first.'}, 401
+
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''
+                DELETE FROM journal_posts
+                WHERE journal_id = %s AND user_id = %s
+                ''',
+                (journal_id, user_id)
+            )
+        db.commit()
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+    finally:
+        db.close()
+
+    return {'success': True}
 
 # Auth Routes:
 

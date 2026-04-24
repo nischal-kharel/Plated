@@ -9,24 +9,52 @@
 </head>
 <body>
     {% include 'navbar.html' %}
+
     <main class="journal-page">
         <h1 class="journal-title">My Meals</h1>
 
-        <div class="meal-grid">
-            <div class="meal-post">
-                <img src="https://placehold.co/300x400" alt="Meal post">
+        {% if meals %}
+            <div class="meal-grid">
+                {% for meal in meals %}
+                    <div
+                        class="meal-post"
+                        data-id="{{ meal.journal_id }}"
+                        data-title="{{ meal.journal_name }}"
+                        data-caption="{{ meal.caption or '' }}"
+                        data-rating="{{ meal.rating or '' }}"
+                        data-tags="{{ meal.tags or '' }}"
+                        data-image="{{ url_for('static', filename=meal.journal_pic) if meal.journal_pic else 'https://placehold.co/400x500' }}"
+                    >
+                        <img
+                            src="{{ url_for('static', filename=meal.journal_pic) if meal.journal_pic else 'https://placehold.co/300x400' }}"
+                            alt="{{ meal.journal_name }}"
+                        >
+                    </div>
+                {% endfor %}
             </div>
-            <div class="meal-post">
-                <img src="https://placehold.co/300x250" alt="Meal post">
-            </div>
-            <div class="meal-post">
-                <img src="https://placehold.co/300x350" alt="Meal post">
-            </div>
-            <div class="meal-post">
-                <img src="https://placehold.co/300x300" alt="Meal post">
+        {% else %}
+            <p class="empty-message">No meals posted yet.</p>
+        {% endif %}
+    </main>
+
+    <div class="modal-backdrop" id="modal-backdrop"></div>
+
+    <div class="meal-modal" id="meal-modal">
+        <button class="close-modal" id="close-modal" type="button">&times;</button>
+        <div class="meal-modal-content">
+            <img id="modal-image" src="https://placehold.co/400x500" alt="Meal">
+            <div class="meal-modal-text">
+                <h2 id="modal-title">Meal Title</h2>
+                <div class="modal-rating-wrap">
+                    <div id="modal-rating-plates"></div>
+                    <p id="modal-rating-text">No rating</p>
+                </div>
+                <p id="modal-caption">No caption</p>
+                <p id="modal-tags">No tags</p>
+                <button id="delete-post-btn" type="button">Delete Post</button>
             </div>
         </div>
-    </main>
+    </div>
     
     <script src="/static/js/journal.js"></script>
 </body>

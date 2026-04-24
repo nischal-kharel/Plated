@@ -74,6 +74,7 @@ document.getElementById("pltratingBox").addEventListener("click", function(e) {
         } else {
             rating = i;
         }
+        document.getElementById("mealRatingInput").value = rating;
         document.getElementById("pltratingText").textContent = rating + " out of 5";
         document.getElementById("pltratingClear").style.display = "inline";
         drawPlates(rating);
@@ -149,14 +150,29 @@ document.getElementById("tagBox").addEventListener("click", function(e) {
 });
 
 // submit
-// document.getElementById("mealForm").addEventListener("submit", function(e) {
-//     e.preventDefault();
-//     console.log("Meal:", document.getElementById("mealTitle").value);
-//     console.log("Caption:", document.getElementById("mealCaption").value);
-//     console.log("Tags:", tags);
-//     console.log("Rating:", rating);
-// });
-document.getElementById("mealForm").addEventListener("submit", function(e) {
+document.getElementById("mealForm").addEventListener("submit", async function(e) {
     e.preventDefault();
-    window.location.href = "/journal";
+
+    document.getElementById("mealRatingInput").value = rating ? rating : "";
+    document.getElementById("mealTagsInput").value = JSON.stringify(tags);
+
+    const form = document.getElementById("mealForm");
+    const formData = new FormData(form);
+
+    try {
+        const response = await fetch("/meals/save", {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            window.location.href = "/journal";
+        } else {
+            alert(result.error || "Could not save meal.");
+        }
+    } catch (error) {
+        alert("Something went wrong while saving the meal.");
+    }
 });
