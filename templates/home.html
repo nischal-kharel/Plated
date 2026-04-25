@@ -1,126 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Home Page</title>
-  <link rel="stylesheet" type="text/css" href="../static/css/home.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/home.css">
 </head>
 <body>
-  <!-- logged in user nav bar here -->
-  <main>
-    <div class="hero">
-      <nav>
-          <div class="logo-body">
-              <a href="/">
-              <img src="/static/media/ratingimages/fullplate.png" class="logo">
-          </a>
-          <span class="logo-name">Plated</span>
-          </div>
+  {% include 'navbar.html' %}
+    <main>
+        <section>
+            <div class="carousel-container">
+                <div class="carousel-text">
+                    <p>Trending Recipes</p>
+                </div>
+                <!-- trending -->
+                <div class="recipe-carousel" id="topRecipesCarousel">
+                    <!-- JS handles this -->
+                </div>
+            </div>
+        </section>
 
-          <ul>
-              <li><a href="/home">Home</a></li>
-              <li><a href="/journal">My Journal</a></li>
-              <li class="find-body">
-                  <a href="#">Find ▾</a>
-                  <div class="find-struct">
-                      <a href="#" class="f-drop-down-link">
-                          <p>Recipes</p>
-                          <span></span>
-                      </a>
-      
-                      <a href="#" class="f-drop-down-link">
-                          <p>Lists</p>
-                          <span></span>
-                      </a>
-      
-                      <a href="#" class="f-drop-down-link">
-                          <p>Friends</p>
-                          <span></span>
-                      </a>
-      
-                  </div>
-              </li>
-          </ul>
+        <section>
+            <div class="carousel-container">
+                <div class="carousel-text">
+                    <p>Friend Activity</p>
+                </div>
+                <!-- friend activity -->
+                <div class="recipe-carousel" id="friendActivityCarousel">
+                    <!-- JS handles this -->
+                </div>
+            </div>
+        </section>
+    </main>
 
-          <div class="search-bar">
-              <input type="text" placeholder="Search recipes, lists...">
-              <span class="search-icon">⌕</span>
-          </div>
-
-          <div class="nav-right">
-
-              <div class="plate-entry">
-                  <div class="plate-btn">
-                      <div class="plate-badge">
-                          <div class="plate-badge-overlay">+</div>
-                          <span class= "plate-badge-label">Plate</span>
-              </div>
-          </div>
-              <div class="entry-options">
-                  <a href="/meals" class="f-drop-down-link">
-                  <p>Meal</p>
-                  </a>
-                  <a href="/recipes/new" class="f-drop-down-link">
-                      <p>Recipe</p>
-                  </a>
-              </div>
-          </div>
-          
-          <div class="pfp-struct">
-              <img src="/static/media/navbarimages/samplepfp.png" class="pfp">
-
-              <div class="drop-down-struct">
-                  <div class="drop-down">
-                      <div class="user-info">
-                          <img src="/static/media/navbarimages/samplepfp.png">
-                          <h2>Fred Doe</h2>
-                      </div>
-                      <hr>
-                  </div>
-              <a href="/profile" class="drop-down-link">
-                  <p>Profile</p>
-              </a>
-              <a href="#" class="drop-down-link">
-                  <p> Reviews</p>
-              </a>
-              <a href="#" class="drop-down-link">
-                  <p> Recipes</p>
-              </a>
-              <a href="#" class="drop-down-link">
-                  <p> Lists</p>
-              </a>
-              </div>
-          </div>
-          
-      </div>
-  </nav>
-</div>
-    <section>
-      <div class="carousel-container">
-        <div class="carousel-text">
-          <p>Trending Recipes</p>
-        </div>
-        <!-- trending -->
-        <div class="recipe-carousel" id="topRecipesCarousel">
-          <!-- JS handles this -->
-        </div>
-      </div>
-    </section>
-    <section>
-      <div class="carousel-container">
-        <div class="carousel-text">
-          <p>Friend Activity</p>
-        </div>
-        <!-- friend activity -->
-        <div class="recipe-carousel" id="friendActivityCarousel">
-          <!-- JS handles this -->
-        </div>
-      </div>
-    </section>
-  </main>
-  <!-- footer here -->
-  <script src="/static/js/home.js"></script>
-
+    <!-- footer here -->
+    <script src="/static/js/home.js"></script>
 </body>
 </html>

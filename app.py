@@ -20,7 +20,7 @@ def get_user_by_id(user_id):
     try:
         with db.cursor() as cursor:
             cursor.execute(
-                'SELECT user_id, username, email FROM users WHERE user_id = %s',
+                'SELECT user_id, username, email, profile_pic FROM users WHERE user_id = %s',
                 (user_id,)
             )
             return cursor.fetchone()
@@ -199,6 +199,18 @@ def get_feed_recipes():
         db.close()
     return {'recipes': recipes}
 
+@app.route('/recipe/<int:recipe_id>')
+def recipe_view(recipe_id):
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute('SELECT * FROM recipes WHERE recipe_id = %s', (recipe_id,))
+            recipe = cursor.fetchone()
+    finally:
+        db.close()
+    if recipe is None:
+        return redirect(url_for('home'))
+    return render_template('recipe_view.html', recipe=recipe)
 
 @app.route('/profile')
 def profile():
@@ -213,6 +225,8 @@ def profile():
     following_count = get_following_count(user_id)
     followers = get_followers(user_id, user_id)
     following = get_following(user_id, user_id)
+    favorite_recipes = get_favorite_recipes_by_user(user_id)
+    recent_meals = get_recent_meals_by_user(user_id)
 
     return render_template(
         'profile.html',
@@ -221,6 +235,8 @@ def profile():
         following_count=following_count,
         followers=followers,
         following=following,
+        favorite_recipes=favorite_recipes,
+        recent_meals=recent_meals,
         current_user_id=user_id,
         following_status=False
     )
@@ -243,6 +259,8 @@ def view_profile(user_id):
     following_count = get_following_count(user_id)
     followers = get_followers(user_id, current_user_id)
     following = get_following(user_id, current_user_id)
+    favorite_recipes = get_favorite_recipes_by_user(user_id)
+    recent_meals = get_recent_meals_by_user(user_id)
 
     following_status = False
     if current_user_id != user_id:
@@ -255,9 +273,55 @@ def view_profile(user_id):
         following_count=following_count,
         followers=followers,
         following=following,
+        favorite_recipes=favorite_recipes,
+        recent_meals=recent_meals,
         current_user_id=current_user_id,
         following_status=following_status
     )
+
+@app.route('/profile/upload_picture', methods=['POST'])
+def upload_profile_picture():
+    user_id = session.get('user_id')
+
+    if not user_id:
+        return {'success': False, 'error': 'Please log in first.'}, 401
+
+    photo = request.files.get('profile_pic')
+
+    if not photo or not photo.filename:
+        return {'success': False, 'error': 'No file selected.'}, 400
+
+    ext = os.path.splitext(photo.filename)[1].lower()
+    allowed_extensions = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'}
+
+    if ext not in allowed_extensions:
+        return {'success': False, 'error': 'Unsupported file type.'}, 400
+
+    filename = uuid.uuid4().hex + ext
+    upload_folder = os.path.join(app.root_path, 'static', 'media', 'profileimages')
+    os.makedirs(upload_folder, exist_ok=True)
+
+    photo.save(os.path.join(upload_folder, filename))
+    profile_pic_path = 'media/profileimages/' + filename
+
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''
+                UPDATE users
+                SET profile_pic = %s
+                WHERE user_id = %s
+                ''',
+                (profile_pic_path, user_id)
+            )
+        db.commit()
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+    finally:
+        db.close()
+
+    return {'success': True, 'profile_pic': url_for('static', filename=profile_pic_path)}
 
 @app.route('/users')
 def users():
@@ -269,6 +333,16 @@ def users():
 
     all_users = get_all_users()
     return render_template('users.html', users=all_users, current_user_id=current_user_id)
+
+@app.context_processor
+def inject_nav_user():
+    user_id = session.get('user_id')
+
+    if not user_id:
+        return {'nav_user': None}
+
+    user = get_user_by_id(user_id)
+    return {'nav_user': user}
 
 @app.route('/recipes')
 def recipe_page():
@@ -283,11 +357,8 @@ def new_recipe():
         return render_template('instructions.html')
 
     recipe_name        = request.form.get('recipe_name', '').strip()
-    description        = request.form.get('description', '').strip()
     ingredients        = request.form.get('ingredients', '').strip()
     directions         = request.form.get('directions', '').strip()
-    meal_types         = request.form.get('meal_types', '').strip()
-    dietary_preference = request.form.get('dietary_preference', 'no-restriction').strip()
     prep_time          = int(request.form.get('prep_time'))
     cook_time          = int(request.form.get('cook_time'))
     servings           = int(request.form.get('servings'))
@@ -296,6 +367,7 @@ def new_recipe():
     if not recipe_name or not ingredients or not directions:
         return {'success': False, 'error': 'Missing required fields.'}, 400
 
+    # handle optional photo upload
     recipe_pic = None
     photo = request.files.get('recipe_pic')
     if photo and photo.filename:
@@ -311,11 +383,11 @@ def new_recipe():
         with db.cursor() as cursor:
             cursor.execute(
                 '''INSERT INTO recipes
-                   (user_id, recipe_name, description, ingredients, directions,
-                    prep_time, cook_time, servings, dietary_preference, meal_type, recipe_pic)
-                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
-                 (session['user_id'], recipe_name, description, ingredients, directions,
-                 prep_time, cook_time, servings, dietary_preference, meal_types, recipe_pic)
+                   (user_id, recipe_name, ingredients, directions,
+                    prep_time, cook_time, servings, dietary_preference, recipe_pic)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+                (session['user_id'], recipe_name, ingredients, directions,
+                 prep_time, cook_time, servings, dietary_preference, recipe_pic)
             )
         db.commit()
     except Exception as e:
@@ -325,118 +397,24 @@ def new_recipe():
 
     return {'success': True}
 
-
-@app.route('/recipe/<int:recipe_id>')
-def recipe_view(recipe_id):
-    user_id = session.get('user_id')
+def get_favorite_recipes_by_user(user_id, limit=4):
     db = get_db()
     try:
         with db.cursor() as cursor:
             cursor.execute(
-                '''SELECT r.*, u.username
-                   FROM recipes r
-                   JOIN users u ON r.user_id = u.user_id
-                   WHERE r.recipe_id = %s''',
-                (recipe_id,)
+                '''
+                SELECT r.recipe_id, r.recipe_name, r.recipe_pic
+                FROM favorite_recipes fr
+                JOIN recipes r ON fr.recipe_id = r.recipe_id
+                WHERE fr.user_id = %s
+                ORDER BY fr.created_at DESC
+                LIMIT %s
+                ''',
+                (user_id, limit)
             )
-            recipe = cursor.fetchone()
-
-            cursor.execute(
-                'SELECT AVG(score) AS avg, COUNT(*) AS count FROM recipe_ratings WHERE recipe_id = %s',
-                (recipe_id,)
-            )
-            rating_data = cursor.fetchone()
-
-            user_rating = None
-            if user_id:
-                cursor.execute(
-                    'SELECT score FROM recipe_ratings WHERE user_id = %s AND recipe_id = %s',
-                    (user_id, recipe_id)
-                )
-                ur = cursor.fetchone()
-                user_rating = ur['score'] if ur else None
+            return cursor.fetchall()
     finally:
         db.close()
-
-    if recipe is None:
-        return redirect(url_for('home'))
-
-    avg_rating = round(float(rating_data['avg']), 1) if rating_data['avg'] else 0
-    rating_count = rating_data['count']
-
-    return render_template(
-        'recipedisplay.html',
-        recipe=recipe,
-        avg_rating=avg_rating,
-        rating_count=rating_count,
-        user_rating=user_rating
-    )
-
-
-@app.route('/rate/<int:recipe_id>', methods=['POST'])
-def rate_recipe(recipe_id):
-    user_id = session.get('user_id')
-    if not user_id:
-        return {'success': False}, 401
-
-    data = request.get_json()
-    score = data.get('score')
-    if not score or score < 0.5 or score > 5:
-        return {'success': False, 'error': 'Invalid score'}, 400
-
-    db = get_db()
-    try:
-        with db.cursor() as cursor:
-            cursor.execute(
-                '''INSERT INTO recipe_ratings (user_id, recipe_id, score)
-                   VALUES (%s, %s, %s)
-                   ON DUPLICATE KEY UPDATE score = %s''',
-                (user_id, recipe_id, score, score)
-            )
-            db.commit()
-            cursor.execute(
-                'SELECT AVG(score) AS avg FROM recipe_ratings WHERE recipe_id = %s',
-                (recipe_id,)
-            )
-            result = cursor.fetchone()
-            new_avg = round(float(result['avg']), 1) if result['avg'] else 0
-    finally:
-        db.close()
-
-    return {'success': True, 'new_avg': new_avg}
-
-
-@app.route('/like/<int:recipe_id>', methods=['POST'])
-def like_recipe(recipe_id):
-    user_id = session.get('user_id')
-    if not user_id:
-        return {'success': False}, 401
-
-    db = get_db()
-    try:
-        with db.cursor() as cursor:
-            cursor.execute(
-                'SELECT 1 FROM recipe_likes WHERE user_id = %s AND recipe_id = %s',
-                (user_id, recipe_id)
-            )
-            already = cursor.fetchone()
-            if already:
-                cursor.execute(
-                    'DELETE FROM recipe_likes WHERE user_id = %s AND recipe_id = %s',
-                    (user_id, recipe_id)
-                )
-                liked = False
-            else:
-                cursor.execute(
-                    'INSERT INTO recipe_likes (user_id, recipe_id) VALUES (%s, %s)',
-                    (user_id, recipe_id)
-                )
-                liked = True
-        db.commit()
-    finally:
-        db.close()
-
-    return {'success': True, 'liked': liked}
 
 @app.route('/meals')
 def meal_page():
@@ -527,6 +505,24 @@ def save_meal():
         db.close()
 
     return {'success': True}
+
+def get_recent_meals_by_user(user_id, limit=4):
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''
+                SELECT journal_id, journal_name, journal_pic, created_at
+                FROM journal_posts
+                WHERE user_id = %s
+                ORDER BY created_at DESC
+                LIMIT %s
+                ''',
+                (user_id, limit)
+            )
+            return cursor.fetchall()
+    finally:
+        db.close()
 
 @app.route('/journal')
 def journal_page():
@@ -780,4 +776,4 @@ def logout():
     return redirect(url_for('landing'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)

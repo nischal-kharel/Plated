@@ -7,64 +7,65 @@
     <link rel="stylesheet" href="/static/css/recipelog.css">
 </head>
 <body>
-<main>
-    <div class="recipe-card">
-        
-        <div class="card-header">
-            <h2 class="recipe-title">New Recipe</h2>
-            <span class="close-btn" onclick= "history.back()">x</span>
+    <main>
+        <div class="recipe-card">
+            <div class="card-header">
+                <h2 class="recipe-title">New Recipe</h2>
+                <span class="close-btn" onclick="history.back()">x</span>
+            </div>
+
+            <form id="recipeForm" enctype="multipart/form-data">
+                <div class="card-body">
+                    <div class="recipe-photo">
+                        <!-- plus sign that toggles for recipe upload -->
+                        <label class="upload-card" for="recipePhoto">
+                            <img id="previewImg" src="" alt="recipe preview">
+                            <div class="upload-overlay">+</div>
+                        </label>
+
+                        <!-- asks for user to upload photo + only accepts imgs format -->
+                        <input type="file" id="recipePhoto" name="recipe_pic" accept="image/*">
+                    </div>
+
+                    <div class="recipe-right">
+                        <!-- asks the user if they want to add recipe entry to journal -->
+                        <input type="text" id="recipeTitle" name="recipe_name" placeholder="Type your recipe...">
+
+                        <div class="eaten-row">
+                            <label id="addToJournalRow">
+                                <input type="checkbox" id="addToJournal"> Add to your Journal?
+                            </label>
+
+                            <div id="journalDetail">
+                                <label>
+                                    <input type="checkbox" id="eatenCheck" checked> Created on
+                                </label>
+                                <input type="date" id="eatenDate" class="date-input">
+                            </div>
+                        </div>
+
+                        <textarea id="recipeCaption" name="description" placeholder="Share your thoughts..."></textarea>
+
+                        <!-- tag section -->
+                        <div class="form-footer">
+                            <div class="tag-col">
+                                <div class="tag-top">
+                                    <span class="footer-label">Tags</span>
+                                    <p class="tag-hint">Press Enter to create</p>
+                                </div>
+                                <div class="tag-box" id="tagBox">
+                                    <input type="text" id="tagInput" placeholder="e.g healthy, homemade">
+                                </div>
+                            </div>
+
+                            <button type="submit">Share</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
+    </main>
 
-        <div class="card-body">
-
-            <div class="recipe-photo">
-                <!-- plus sign that toggles for meal upload -->
-                <label class="upload-card" for="recipePhoto">
-                    <img id= "previewImg" src="" alt="recipe preview">
-                    <div class="upload-overlay">+</div>
-                </label>
-                <!-- asks for user to upload photo + only accepts imgs format -->
-                <input type="file" id="recipePhoto" accept="image/*">
-            </div>
-            
-            <div class="recipe-right">
-                <form id ="recipeForm">
-
-                <!-- asks the user if they want to add meal entry to journal  -->
-                <input type="text" id="recipeTitle" placeholder="Type your recipe...">
-
-                <div class="eaten-row">
-                    <label id="addToJournalRow">
-                        <input type="checkbox" id="addToJournal"> Add to your Journal?
-                </label>
-                <div id="journalDetail">
-                    <label>
-                        <input type="checkbox" id="eatenCheck" checked> Created on
-                    </label>
-                    <input type="date" id="eatenDate" class="date-input">
-                </div>
-            </div>
-            
-            <textarea id="recipeCaption" placeholder="Share your thoughts..."></textarea>
-
-            <!-- tag section -->
-            <div class="form-footer">
-                <div class="tag-col">
-                    <div class="tag-top">
-                        <span class="footer-label">Tags</span>
-                        <p class="tag-hint">Press Enter to create</p>
-                    </div>
-                    <div class="tag-box" id="tagBox">
-                        <input type="text" id="tagInput" placeholder="e.g healthy, homemade">
-                    </div>
-                </div>
-                <button type="submit">Share</button>
-            </div>
-
-        </form>
-
-    </div>
-        
-</div>
-</main>
-<script src="/static/js/recipelog.js"></script>
+    <script src="/static/js/recipelog.js"></script>
+</body>
+</html>

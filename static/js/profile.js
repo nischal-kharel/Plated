@@ -3,10 +3,30 @@ const profilePicInput = document.getElementById("profile-pic");
 const profilePreview = document.getElementById("profile-preview");
 
 if (profilePicInput && profilePreview) {
-    profilePicInput.addEventListener("change", function() {
+    profilePicInput.addEventListener("change", async function() {
         const file = this.files[0];
-        if (file) {
-            profilePreview.src = URL.createObjectURL(file);
+        if (!file) return;
+
+        profilePreview.src = URL.createObjectURL(file);
+
+        const formData = new FormData();
+        formData.append("profile_pic", file);
+
+        try {
+            const response = await fetch("/profile/upload_picture", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                profilePreview.src = result.profile_pic;
+            } else {
+                alert(result.error || "Could not upload profile picture.");
+            }
+        } catch (error) {
+            alert("Something went wrong while uploading the profile picture.");
         }
     });
 }
