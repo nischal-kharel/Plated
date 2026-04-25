@@ -57,13 +57,20 @@
             </div>
         
             <div class="pfp-struct">
-                <img src="/static/media/navbarimages/samplepfp.png" class="pfp">
-    
+                {% if nav_user and nav_user.profile_pic %}
+                    <img src="{{ url_for('static', filename=nav_user.profile_pic) }}" class="pfp">
+                {% else %}
+                    <img src="/static/media/profileimages/default-pfp.svg" class="pfp">
+                {% endif %}
                 <div class="drop-down-struct">
                     <div class="drop-down">
                         <div class="user-info">
-                            <img src="/static/media/navbarimages/samplepfp.png">
-                            <h2>Fred Doe</h2>
+                            {% if nav_user and nav_user.profile_pic %}
+                                <img src="{{ url_for('static', filename=nav_user.profile_pic) }}">
+                            {% else %}
+                                <img src="/static/media/profileimages/default-pfp.svg">
+                            {% endif %}
+                            <h2>{{ nav_user.username.upper() if nav_user else 'GUEST' }}</h2>
                         </div>
                         <hr>
                     </div>

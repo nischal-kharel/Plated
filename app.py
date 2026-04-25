@@ -20,7 +20,7 @@ def get_user_by_id(user_id):
     try:
         with db.cursor() as cursor:
             cursor.execute(
-                'SELECT user_id, username, email FROM users WHERE user_id = %s',
+                'SELECT user_id, username, email, profile_pic FROM users WHERE user_id = %s',
                 (user_id,)
             )
             return cursor.fetchone()
@@ -271,6 +271,50 @@ def view_profile(user_id):
         following_status=following_status
     )
 
+@app.route('/profile/upload_picture', methods=['POST'])
+def upload_profile_picture():
+    user_id = session.get('user_id')
+
+    if not user_id:
+        return {'success': False, 'error': 'Please log in first.'}, 401
+
+    photo = request.files.get('profile_pic')
+
+    if not photo or not photo.filename:
+        return {'success': False, 'error': 'No file selected.'}, 400
+
+    ext = os.path.splitext(photo.filename)[1].lower()
+    allowed_extensions = {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'}
+
+    if ext not in allowed_extensions:
+        return {'success': False, 'error': 'Unsupported file type.'}, 400
+
+    filename = uuid.uuid4().hex + ext
+    upload_folder = os.path.join(app.root_path, 'static', 'media', 'profileimages')
+    os.makedirs(upload_folder, exist_ok=True)
+
+    photo.save(os.path.join(upload_folder, filename))
+    profile_pic_path = 'media/profileimages/' + filename
+
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''
+                UPDATE users
+                SET profile_pic = %s
+                WHERE user_id = %s
+                ''',
+                (profile_pic_path, user_id)
+            )
+        db.commit()
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+    finally:
+        db.close()
+
+    return {'success': True, 'profile_pic': url_for('static', filename=profile_pic_path)}
+
 @app.route('/users')
 def users():
     current_user_id = session.get('user_id')
@@ -281,6 +325,16 @@ def users():
 
     all_users = get_all_users()
     return render_template('users.html', users=all_users, current_user_id=current_user_id)
+
+@app.context_processor
+def inject_nav_user():
+    user_id = session.get('user_id')
+
+    if not user_id:
+        return {'nav_user': None}
+
+    user = get_user_by_id(user_id)
+    return {'nav_user': user}
 
 @app.route('/recipes')
 def recipe_page():

@@ -13,10 +13,14 @@
         <section class = "left-content">
             <div class = "profile-card">
                 <div class="profile-upload">
-                  <label class="default-pfp" for="profile-pic">
-                    <img id="profile-preview" src="/static/media/profileimages/default-pfp.svg" alt="Profile picture"/>
-                  </label>
-                  <input type="file" id="profile-pic" accept="image/*">
+                    <label class="default-pfp" for="profile-pic">
+                        <img 
+                            id="profile-preview"
+                            src="{% if user.profile_pic %}{{ url_for('static', filename=user.profile_pic) }}{% else %}/static/media/profileimages/default-pfp.svg{% endif %}"
+                            alt="Profile picture"
+                        />
+                    </label>
+                    <input type="file" id="profile-pic" name="profile_pic" accept="image/*">
                 </div>
 
                 <div class = "profile-info">

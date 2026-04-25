@@ -7,56 +7,56 @@
     <link rel="stylesheet" href="/static/css/add_meal_page.css">
 </head>
 <body>
-<main>
-    <div class="meal-card">
+    <main>
+        <div class="meal-card">
         
-        <div class="card-header">
-            <h2 class="meal-title">I ate...</h2>
-            <span class="close-btn" onclick= "history.back()">x</span>
-        </div>
+            <div class="card-header">
+                <h2 class="meal-title">I ate...</h2>
+                <span class="close-btn" onclick= "history.back()">x</span>
+            </div>
 
-        <form id="mealForm" enctype="multipart/form-data">
-            <input type="hidden" id="mealRatingInput" name="rating" value="">
-            <input type="hidden" id="mealTagsInput" name="tags" value="">
-            <div class="card-body">
-                <div class="meal-photo">
-                    <label class="upload-card" for="mealPhoto">
-                        <img id="previewImg" src="" alt="meal preview">
-                        <div class="upload-overlay">+</div>
-                    </label>
-                    <input type="file" id="mealPhoto" name="journal_pic" accept="image/*">
-                </div>
+            <form id="mealForm" enctype="multipart/form-data">
+                <input type="hidden" id="mealRatingInput" name="rating" value="">
+                <input type="hidden" id="mealTagsInput" name="tags" value="">
+                <div class="card-body">
+                    <div class="meal-photo">
+                        <label class="upload-card" for="mealPhoto">
+                            <img id="previewImg" src="" alt="meal preview">
+                            <div class="upload-overlay">+</div>
+                        </label>
+                        <input type="file" id="mealPhoto" name="journal_pic" accept="image/*">
+                    </div>
                 
-                <div class="meal-right">
-                    <input type="text" id="mealTitle" name="journal_name" placeholder="Type your meal...">
-                    <textarea id="mealCaption" name="caption" placeholder="Share your thoughts..."></textarea>
-                </div>
-            </div>
-
-            <div class="form-footer">
-                <div class="tag-col">
-                    <div class="tag-top">
-                        <span class="pltfooter-label">Tags</span>
-                        <p class="tag-hint">Press Enter to create</p>
-                    </div>
-                    <div class="tag-box" id="tagBox">
-                        <input type="text" id="tagInput" placeholder="e.g healthy, homemade">
+                    <div class="meal-right">
+                        <input type="text" id="mealTitle" name="journal_name" placeholder="Type your meal...">
+                        <textarea id="mealCaption" name="caption" placeholder="Share your thoughts..."></textarea>
                     </div>
                 </div>
 
-                <div class="pltrating-col">
-                    <span class="pltfooter-label">Rating</span>
-                    <div class="pltrating-row">
-                        <span id="pltratingClear">x</span>
-                        <div id="pltratingBox"></div>
-                        <span id="pltratingText"></span>
+                <div class="form-footer">
+                    <div class="tag-col">
+                        <div class="tag-top">
+                            <span class="pltfooter-label">Tags</span>
+                            <p class="tag-hint">Press Enter to create</p>
+                        </div>
+                        <div class="tag-box" id="tagBox">
+                            <input type="text" id="tagInput" placeholder="e.g healthy, homemade">
+                        </div>
                     </div>
+
+                    <div class="pltrating-col">
+                        <span class="pltfooter-label">Rating</span>
+                        <div class="pltrating-row">
+                            <span id="pltratingClear">x</span>
+                            <div id="pltratingBox"></div>
+                            <span id="pltratingText"></span>
+                        </div>
+                    </div>
+                    <button type="submit">Add to Journal</button>
                 </div>
-                <button type="submit">Add to Journal</button>
-            </div>
-        </form>
-    </div>
-</main>
+            </form>
+        </div>
+    </main>
 <script src="/static/js/add_meal.js"></script>
 </body>
 </html>
