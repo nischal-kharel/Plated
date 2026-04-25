@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ recipe.recipe_name }} - Plated</title>
+    <link rel="stylesheet" href="/static/css/recipedisplay.css">
+</head>
+<body>
+<main>
+<div class="recipe-page">
+
+    <div class="recipe-top">
+
+        <div class="recipe-photo-col">
+            {% if recipe.recipe_pic %}
+                <img src="/static/{{ recipe.recipe_pic }}" 
+                     alt="{{ recipe.recipe_name }}" 
+                     class="recipe-main-photo">
+            {% else %}
+                <div class="recipe-no-photo">No photo</div>
+            {% endif %}
+        </div>
+
+        <div class="recipe-info-col">
+
+            <div class="recipe-header">
+                <h1 class="recipe-name">{{ recipe.recipe_name }}</h1>
+                <span class="close-btn" onclick="history.back()">×</span>
+            </div>
+
+            <p class="recipe-author">
+                by <a href="/profile/{{ recipe.user_id }}">{{ recipe.username }}</a>
+            </p>
+
+            {% if recipe.description %}
+                <p class="recipe-description">{{ recipe.description }}</p>
+            {% endif %}
+
+            <div class="recipe-badges">
+                <div class="badge" id="prepBadge">
+                    <span class="badge-label">Prep</span>
+                    <span class="badge-value">{{ recipe.prep_time }} min</span>
+                </div>
+
+                <div class="badge" id="cookBadge">
+                    <span class="badge-label">Cook</span>
+                    <span class="badge-value">{{ recipe.cook_time }} min</span>
+                </div>
+
+                <div class="badge" id="servBadge">
+                    <span class="badge-label">Serves</span>
+                    <span class="badge-value">{{ recipe.servings }} ppl</span>
+                </div>
+            </div>
+
+            <div class="recipe-tags">
+                {% if recipe.meal_type %}
+                    {% for tag in recipe.meal_type.split(',') %}
+                    <span class="recipe-tag tag-meal">{{ tag.strip() }}</span>
+                {% endfor %}
+            {% endif %}
+            {% if recipe.dietary_preference and recipe.dietary_preference != 'no-restriction' %}
+                {% for tag in recipe.dietary_preference.split(',') %}
+                    <span class="recipe-tag tag-diet">{{ tag.strip() }}</span>
+                {% endfor %}
+            {% endif %}
+            </div>
+            
+            <div class="rating-section">
+                <p class="rating-label">Rate this recipe</p>
+
+                <div class="plate-rating" id="plateRating"></div>
+
+                <p class="avg-rating">
+                    Avg: <strong>{{ "%.1f"|format(avg_rating) }}</strong> / 5
+                    ({{ rating_count }} rating{{ 's' if rating_count != 1 else '' }})
+                </p>
+            </div>
+
+            <div class="recipe-actions">
+                <button class="action-btn" id="likeBtn" onclick="toggleLike()">♡ Like</button>
+                <button class="action-btn" onclick="history.back()">← Back</button>
+            </div>
+
+        </div> <!-- end recipe-info-col -->
+
+    </div> <!-- end recipe-top -->
+
+
+    <div class="recipe-body">
+
+        <div class="ingredients-col">
+            <h2 class="section-title">Ingredients</h2>
+            <ul class="ingredients-list">
+                {% for ingredient in recipe.ingredients.split(',') %}
+                    <li>{{ ingredient.strip() }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="directions-col">
+            <h2 class="section-title">Steps</h2>
+
+            {% set ns = namespace(current_heading='', current_body='') %}
+            {% for line in recipe.directions.split('\n') %}
+                {% if line.startswith('Step') %}
+                    {% if ns.current_heading %}
+                        <div class="step-block">
+                            <p class="step-heading">{{ ns.current_heading }}</p>
+                            <p class="step-text">{{ ns.current_body.strip() }}</p>
+                        </div>
+                    {% endif %}
+                    {% set ns.current_heading = line %}
+                    {% set ns.current_body = '' %}
+                {% elif line.strip() %}
+                    {% set ns.current_body = ns.current_body + line + ' ' %}
+                {% endif %}
+            {% endfor %}
+
+            {% if ns.current_heading %}
+                <div class="step-block">
+                    <p class="step-heading">{{ ns.current_heading }}</p>
+                    <p class="step-text">{{ ns.current_body.strip() }}</p>
+                </div>
+            {% endif %}
+        </div>
+
+    </div> <!-- end recipe-body -->
+
+</div> <!-- end recipe-page -->
+</main>
+<script>
+    const recipeId = {{ recipe.recipe_id }};
+    const userRating = {{ user_rating or 0 }};
+    const prepTime = {{ recipe.prep_time }};
+    const cookTime = {{ recipe.cook_time }};
+    const servings = {{ recipe.servings }};
+</script>
+<script src="/static/js/recipedisplay.js"></script>
+</body>
+</html>

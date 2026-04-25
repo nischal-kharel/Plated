@@ -9,12 +9,10 @@
 <body>
 <main>
     <div class="instructions-card">
-
         <div class="card-header">
-            <span class="step-indicator" id="stepIndicator">Step 1 of 4</span>
+            <span class="step-indicator" id="stepIndicator">Step 1 of 5</span>
             <span class="close-btn" onclick="history.back()">x</span>
         </div>
-
         <div class="slider-wrapper">
         <div class="slider-track" id="sliderTrack">
 
@@ -22,12 +20,10 @@
             <div class="slide">
                 <h2 class="slide-title">Let's start with the basics...</h2>
                 <p class="slide-sub">Give us a general idea of your recipe</p>
-
                 <div class="field-group">
                     <label class="field-label">Recipe Name</label>
                     <input type="text" id="recipeName" class="styled-input" placeholder="Give your recipe a name..." maxlength="255">
                 </div>
-
                 <div class="field-group">
                     <label class="field-label">Prep?</label>
                     <select id="prepTime" class="styled-select">
@@ -37,7 +33,6 @@
                         <option value="extensive">Extensive (45+ min)</option>
                     </select>
                 </div>
-
                 <div class="field-group">
                     <label class="field-label">Cook?</label>
                     <select id="cookTime" class="styled-select">
@@ -47,7 +42,6 @@
                         <option value="extensive">Extensive (1+ hours)</option>
                     </select>
                 </div>
-
                 <div class="field-group">
                     <label class="field-label">Servings?</label>
                     <select id="servings" class="styled-select">
@@ -57,85 +51,93 @@
                         <option value="extensive">Extensive (8+ ppl)</option>
                     </select>
                 </div>
-
                 <div class="slide-footer">
                     <button class="next-btn" onclick="goNext()">Next</button>
                 </div>
             </div>
 
-            <!-- step 2: specifics -->
+            <!-- step 2: description -->
             <div class="slide">
-                <h2 class="slide-title">Now with the specifics...</h2>
-                <p class="slide-sub">Help others find your recipe</p>
-
+                <h2 class="slide-title">Describe your recipe...</h2>
+                <p class="slide-sub">Tell people what makes it special (at least 10 words)</p>
                 <div class="field-group">
-                    <label class="field-label">Recipe Photo</label>
-                    <label class="upload-card" for="recipePhoto">
-                        <img id="previewImg" src="" alt="recipe preview">
-                        <div class="upload-overlay">+</div>
-                    </label>
-                    <input type="file" id="recipePhoto" accept="image/*">
+                    <label class="field-label">Description</label>
+                    <textarea id="recipeDescription" class="styled-textarea" placeholder="e.g. A crispy, golden homemade pizza loaded with fresh toppings and a perfectly chewy crust..."></textarea>
                 </div>
-
-                <div class="field-group">
-                    <label class="field-label">Dietary Restrictions</label>
-                    <select id="dietary" class="styled-select">
-                        <option value="no-restriction" selected>No Restriction</option>
-                        <option value="vegetarian">Vegetarian</option>
-                        <option value="pescatarian">Pescatarian</option>
-                        <option value="vegan">Vegan</option>
-                        <option value="kosher">Kosher</option>
-                        <option value="halal">Halal</option>
-                        <option value="nut-free">Nut-free</option>
-                        <option value="gluten-free">Gluten-free</option>
-                    </select>
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">Meal Type</label>
-                    <select id="mealType" class="styled-select">
-                        <option value="">Select meal type</option>
-                        <option value="breakfast">Breakfast</option>
-                        <option value="lunch">Lunch</option>
-                        <option value="dinner">Dinner</option>
-                        <option value="dessert">Dessert</option>
-                    </select>
-                </div>
-
                 <div class="slide-footer">
                     <button class="back-btn" onclick="goBack()">Back</button>
                     <button class="next-btn" onclick="goNext()">Next</button>
                 </div>
             </div>
 
-            <!-- step 3: ingredients -->
+<!-- step 3: specifics -->
+<div class="slide">
+    <h2 class="slide-title">Now with the specifics...</h2>
+    <p class="slide-sub">Help others find your recipe</p>
+
+    <div class="field-group">
+        <label class="field-label">Recipe Photo</label>
+        <label class="upload-card" for="recipePhoto">
+            <img id="previewImg" src="" alt="recipe preview">
+            <div class="upload-overlay">+</div>
+        </label>
+        <input type="file" id="recipePhoto" accept="image/*">
+    </div>
+
+    <div class="field-group">
+        <label class="field-label">Meal Type <span class="field-req">pick at least one</span></label>
+        <div class="chip-group" id="mealTypeGroup">
+            <span class="chip" data-val="breakfast">Breakfast</span>
+            <span class="chip" data-val="lunch">Lunch</span>
+            <span class="chip" data-val="dinner">Dinner</span>
+            <span class="chip" data-val="dessert">Dessert</span>
+            <span class="chip" data-val="snack">Snack</span>
+        </div>
+    </div>
+
+    <div class="field-group">
+        <label class="field-label">Dietary <span class="field-req">select all that apply</span></label>
+        <div class="chip-group" id="dietaryGroup">
+            <span class="chip" data-val="no-restriction">No Restriction</span>
+            <span class="chip" data-val="vegetarian">Vegetarian</span>
+            <span class="chip" data-val="pescatarian">Pescatarian</span>
+            <span class="chip" data-val="vegan">Vegan</span>
+            <span class="chip" data-val="kosher">Kosher</span>
+            <span class="chip" data-val="halal">Halal</span>
+            <span class="chip" data-val="nut-free">Nut-free</span>
+            <span class="chip" data-val="gluten-free">Gluten-free</span>
+        </div>
+    </div>
+
+    <div class="slide-footer">
+        <button class="back-btn" onclick="goBack()">Back</button>
+        <button class="next-btn" onclick="goNext()">Next</button>
+    </div>
+</div>
+
+            <!-- step 4: ingredients -->
             <div class="slide">
                 <h2 class="slide-title">Then to the ingredients...</h2>
                 <p class="slide-sub">Add each ingredient one by one</p>
-
                 <div class="add-row">
                     <input type="text" id="ingredientInput" placeholder="Enter ingredient...">
                     <button type="button" class="add-btn" onclick="addIngredient()">Add</button>
                 </div>
-
                 <div class="item-box" id="ingredientList">
                     <p class="empty-hint">No ingredients added yet</p>
                 </div>
-
                 <div class="slide-footer">
                     <button class="back-btn" onclick="goBack()">Back</button>
                     <button class="next-btn" onclick="goNext()">Next</button>
                 </div>
             </div>
-            <!-- step 4: steps -->
+
+            <!-- step 5: steps -->
             <div class="slide">
                 <h2 class="slide-title">And finally, the steps...</h2>
                 <p class="slide-sub">Walk through each step of your recipe</p>
-
                 <div id="stepsContainer"></div>
-
                 <button type="button" class="add-step-btn" onclick="addStep()">+ Add Step</button>
-
                 <div class="slide-footer">
                     <button class="back-btn" onclick="goBack()">Back</button>
                     <button class="next-btn save-btn" onclick="saveRecipe()">Save Recipe</button>
