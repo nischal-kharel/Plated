@@ -225,6 +225,8 @@ def profile():
     following_count = get_following_count(user_id)
     followers = get_followers(user_id, user_id)
     following = get_following(user_id, user_id)
+    favorite_recipes = get_favorite_recipes_by_user(user_id)
+    recent_meals = get_recent_meals_by_user(user_id)
 
     return render_template(
         'profile.html',
@@ -233,6 +235,8 @@ def profile():
         following_count=following_count,
         followers=followers,
         following=following,
+        favorite_recipes=favorite_recipes,
+        recent_meals=recent_meals,
         current_user_id=user_id,
         following_status=False
     )
@@ -255,6 +259,8 @@ def view_profile(user_id):
     following_count = get_following_count(user_id)
     followers = get_followers(user_id, current_user_id)
     following = get_following(user_id, current_user_id)
+    favorite_recipes = get_favorite_recipes_by_user(user_id)
+    recent_meals = get_recent_meals_by_user(user_id)
 
     following_status = False
     if current_user_id != user_id:
@@ -267,6 +273,8 @@ def view_profile(user_id):
         following_count=following_count,
         followers=followers,
         following=following,
+        favorite_recipes=favorite_recipes,
+        recent_meals=recent_meals,
         current_user_id=current_user_id,
         following_status=following_status
     )
@@ -389,6 +397,25 @@ def new_recipe():
 
     return {'success': True}
 
+def get_favorite_recipes_by_user(user_id, limit=4):
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''
+                SELECT r.recipe_id, r.recipe_name, r.recipe_pic
+                FROM favorite_recipes fr
+                JOIN recipes r ON fr.recipe_id = r.recipe_id
+                WHERE fr.user_id = %s
+                ORDER BY fr.created_at DESC
+                LIMIT %s
+                ''',
+                (user_id, limit)
+            )
+            return cursor.fetchall()
+    finally:
+        db.close()
+
 @app.route('/meals')
 def meal_page():
     user_id = session.get('user_id')
@@ -478,6 +505,24 @@ def save_meal():
         db.close()
 
     return {'success': True}
+
+def get_recent_meals_by_user(user_id, limit=4):
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''
+                SELECT journal_id, journal_name, journal_pic, created_at
+                FROM journal_posts
+                WHERE user_id = %s
+                ORDER BY created_at DESC
+                LIMIT %s
+                ''',
+                (user_id, limit)
+            )
+            return cursor.fetchall()
+    finally:
+        db.close()
 
 @app.route('/journal')
 def journal_page():
@@ -731,4 +776,4 @@ def logout():
     return redirect(url_for('landing'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)

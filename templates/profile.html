@@ -81,11 +81,20 @@
                     <h2> Favorites </h2>
                     <div class = "section-line"></div>
                 </div>
-                <div class = "card-row">
-                    <img src="https://placehold.co/220x300" alt="Favorite 1" class="post-card" />
-                    <img src="https://placehold.co/220x300" alt="Favorite 2" class="post-card" />
-                    <img src="https://placehold.co/220x300" alt="Favorite 3" class="post-card" />
-                    <img src="https://placehold.co/220x300" alt="Favorite 4" class="post-card" />
+                <div class="card-row">
+                    {% if favorite_recipes %}
+                        {% for recipe in favorite_recipes %}
+                            <a href="{{ url_for('recipe_view', recipe_id=recipe.recipe_id) }}">
+                                {% if recipe.recipe_pic %}
+                                    <img src="{{ url_for('static', filename=recipe.recipe_pic) }}" alt="{{ recipe.recipe_name }}" class="post-card" />
+                                {% else %}
+                                    <img src="https://placehold.co/220x300?text=No+Image" alt="{{ recipe.recipe_name }}" class="post-card" />
+                                {% endif %}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <p class="empty-section-message">No favorite recipes yet.</p>
+                    {% endif %}
                 </div>
             </section>
 
@@ -94,24 +103,23 @@
                     <h2> Recently </h2>
                     <div class = "section-line"></div>
                 </div>
-                <div class = "card-row">
-                    <img src="https://placehold.co/220x300" alt="Recent 1" class="post-card" />
-                    <img src="https://placehold.co/220x300" alt="Recent 2" class="post-card" />
-                    <img src="https://placehold.co/220x300" alt="Recent 3" class="post-card" />
-                    <img src="https://placehold.co/220x300" alt="Recent 4" class="post-card" />
+                <div class="card-row">
+                    {% if recent_meals %}
+                        {% for meal in recent_meals %}
+                            <a href="{{ url_for('journal_page') }}">
+                                {% if meal.journal_pic %}
+                                    <img src="{{ url_for('static', filename=meal.journal_pic) }}" alt="{{ meal.journal_name }}" class="post-card" />
+                                {% else %}
+                                    <img src="https://placehold.co/220x300?text=No+Image" alt="{{ meal.journal_name }}" class="post-card" />
+                                {% endif %}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <p class="empty-section-message">No recent meals yet.</p>
+                    {% endif %}
                 </div>
             </section>
         </section>
-
-        <aside class = "right-content">
-            <div class="featured-box">
-                <img
-                src="https://placehold.co/360x420"
-                alt="Featured post"
-                class="featured-image"
-                />
-            </div>
-        </aside>
     </main>
 
     <script id="followers-data" type="application/json">
