@@ -20,8 +20,35 @@ const view_list_title = document.querySelector(".view-list-title");
 const view_list_overlay = document.getElementById("view-list-overlay");
 let currentListId = null; // Track which list is currently open
 
+// Render function for recipes
+function renderList(recipes) {
+    if (!recipes || recipes.length === 0) {
+        return '<p class="empty-list-text">No recipes saved yet!</p>';
+    }
+    
+    const rowSize = 5;
+    let html = '';
+    
+    for (let i = 0; i < recipes.length; i += rowSize) {
+        const rowRecipes = recipes.slice(i, i + rowSize);
+        html += '<div class="recipe-row">';
+        rowRecipes.forEach(function(recipe) {
+            const imgSrc = recipe.recipe_pic ? `/static/${recipe.recipe_pic}` : 'https://placehold.co/220x300';
+            html += `
+                <div class="recipe-item">
+                    <a href="/recipe/${recipe.recipe_id}">
+                        <img src="${imgSrc}" alt="${recipe.recipe_name}" class="recipe-preview" />
+                    </a>
+                </div>
+            `;
+        });
+        html += '</div>';
+    }
+    return html;
+}
+
 view_list_buttons.forEach(function(button) {
-    button.addEventListener("click", function() {
+    button.addEventListener("click", async function() {
         const listContainer = button.closest(".lists-container");
         const listName = listContainer?.querySelector(".list-header h2")?.textContent || "Default List Name";
         currentListId = listContainer?.dataset.listId;
@@ -32,8 +59,20 @@ view_list_buttons.forEach(function(button) {
         if (view_list_overlay) {
             view_list_overlay.style.display = "flex";
         }
-
         document.getElementById("backdrop-first").style.display = "block";
+
+        const contentBox = document.getElementById("all-recipes");
+        try {
+            const response = await fetch(`/get_list_recipes?list=${currentListId}`);
+            if (!response.ok) {
+                throw new Error('Network response not ok');
+            }
+            const recipes = await response.json();
+            contentBox.innerHTML = renderList(recipes);
+        } 
+        catch (err) {
+            contentBox.innerHTML = "Error loading recipes :(";
+        }
     });
 })
 

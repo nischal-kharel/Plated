@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 import pymysql
 import os
@@ -930,7 +930,6 @@ def mylists():
     db = get_db()
     try:
         with db.cursor() as cursor:
-            # Get all lists for the user
             cursor.execute(
                 '''
                 SELECT list_id, list_name
@@ -1081,7 +1080,33 @@ def add_to_list():
     
     return redirect(url_for('recipe_view', recipe_id=recipe_id))
 
+@app.route('/get_list_recipes', methods=['GET'])
+def get_list_recipes():
+    current_user_id = session.get('user_id')
+    if not current_user_id:
+        return jsonify([]), 401
+    
+    list_id = request.args.get("list")
+    if not list_id:
+        return jsonify([])
+    
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT r.recipe_id, r.recipe_name, r.recipe_pic
+                FROM recipes r
+                JOIN mylists_recipes mr ON r.recipe_id = mr.recipe_id
+                WHERE mr.list_id = %s
+                """, (list_id,))
+            recipes = cursor.fetchall()
 
+    finally:
+        db.close()
+
+    return jsonify(recipes)
+	
 
 @app.route('/logout')
 def logout():
