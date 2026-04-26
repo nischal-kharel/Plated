@@ -58,6 +58,7 @@ header {
 
 .recipe-preview {
     height: 200px;
+    width: 150px;
     margin-top: 10px;
     margin-right: -30px;
     border: 2px solid#c4bb9e;
@@ -339,4 +340,15 @@ input {
 
 .validate-delete-buttons {
     display: flex;
+}
+
+.list-error {
+    background-color: #fdecea;
+    border: 1px solid #e57373;
+    color: #b71c1c;
+    width: fit-content;
+    padding: 8px 12px;
+    font-size: 14px;
+    margin-left: 30px;
+    margin-top: 30px;
 }

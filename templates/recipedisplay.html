@@ -81,6 +81,31 @@
             <div class="recipe-actions">
                 <button class="action-btn" id="likeBtn" onclick="toggleLike()">♡ Like</button>
                 <button class="action-btn" onclick="history.back()">← Back</button>
+                <div class="action-btn add-body">
+                <a href="#" style="text-decoration: none; color: #555;">Add to List</a>
+                <div class="add-struct">
+                    {% if user_lists %}
+                        {% for list in user_lists %}
+                        <form action="{{ url_for('add_to_list') }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="list_id" value="{{ list.list_id }}">
+                            <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}">
+                            <button type="submit" class="f-drop-down-link">
+                                <p>{{ list.list_name }}</p>
+                            </button>
+                        </form>
+                        {% endfor %}
+                    {% else %}
+                        <a href="/mylists" class="f-drop-down-link">
+                            <p>Create new list</p>
+                        </a>
+                    {% endif %}
+                </div>
+              </div>
+              {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                  <p class="add-response">{{ messages[0] }}</p>
+                {% endif %}
+              {% endwith %}
             </div>
 
         </div> <!-- end recipe-info-col -->

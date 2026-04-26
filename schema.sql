@@ -201,3 +201,32 @@ CREATE INDEX idx_tag_name              ON tags(tag_name);
 -- and MySQL will find recipes where those words appear anywhere in the
 -- name, description, or ingredients."
 ALTER TABLE recipes ADD FULLTEXT idx_recipe_search (recipe_name, description, ingredients);
+
+-- ============================================
+-- MYLISTS
+-- user created lists of recipes
+-- many-to-one relationship with users
+-- lists have names like "Want to Make" and descriptions
+-- ============================================
+CREATE TABLE mylists (
+	list_id 	INT AUTO_INCREMENT PRIMARY KEY,
+    user_id 	INT NOT NULL,
+    list_name	VARCHAR(100) NOT NULL,
+    description	VARCHAR(255),
+    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- ============================================
+-- MYLISTS_RECIPES
+-- links recipes to mylists
+-- allows for many-to-many relationship between lists and recipes
+-- ============================================
+CREATE TABLE mylists_recipes (
+	list_id		INT NOT NULL,
+    recipe_id	INT NOT NULL,
+    added_at	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (list_id, recipe_id),
+    FOREIGN KEY (list_id) REFERENCES mylists(list_id) ON DELETE CASCADE,
+    FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id) ON DELETE CASCADE
+);

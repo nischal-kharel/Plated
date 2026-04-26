@@ -433,6 +433,15 @@ def recipe_view(recipe_id):
                 )
                 ur = cursor.fetchone()
                 user_rating = ur['score'] if ur else None
+                
+                # Get user's lists for the "add to list" dropdown
+                cursor.execute(
+                    'SELECT list_id, list_name FROM mylists WHERE user_id = %s',
+                    (user_id,)
+                )
+                user_lists = cursor.fetchall()
+            else:
+                user_lists = []
     finally:
         db.close()
 
@@ -447,7 +456,8 @@ def recipe_view(recipe_id):
         recipe=recipe,
         avg_rating=avg_rating,
         rating_count=rating_count,
-        user_rating=user_rating
+        user_rating=user_rating,
+        user_lists=user_lists
     )
 
 
@@ -829,46 +839,166 @@ def unfollow_user(user_id):
 
 @app.route('/mylists')
 def mylists():
-    user_id = session.get('user_id')
-    if not user_id:
+    current_user_id = session.get('user_id')
+    if not current_user_id:
         flash('Please log in first.')
         return redirect(url_for('login'))
 
-    # test 
-    user_lists_names = [
-        {'id': 1, 'name': 'Want to Make'},
-        {'id': 2, 'name': 'Favorites'},
-        {'id': 3, 'name': 'Vegetarian'}
-    ]
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            # Get all lists for the user
+            cursor.execute(
+                '''
+                SELECT list_id, list_name
+                FROM mylists
+                WHERE user_id = %s
+                ''',
+                (current_user_id,)
+            )
+            user_lists = cursor.fetchall()
+            
+            # Get recipes for each list
+            for lst in user_lists:
+                cursor.execute(
+                    '''
+                    SELECT r.recipe_id, r.recipe_name, r.recipe_pic
+                    FROM recipes r
+                    JOIN mylists_recipes mr ON r.recipe_id = mr.recipe_id
+                    WHERE mr.list_id = %s
+                    LIMIT 4
+                    ''',
+                    (lst['list_id'],)
+                )
+                lst['recipes'] = cursor.fetchall()
+            
+            user_lists_names = user_lists
+        db.commit()
+    finally:
+        db.close()
+
     return render_template('mylists.html', list_names=user_lists_names)
 
 # Create new user list
 @app.route('/createlist', methods=['POST'])
 def createlist():
-    user_id = session.get('user_id')
-    if not user_id:
+    current_user_id = session.get('user_id')
+    if not current_user_id:
         flash('Please log in first.')
         return redirect(url_for('login'))
     
-    list_name = request.form.get('list-name')
-    # check if list name is taken, then show error message and redirect
-    # otherwise create new empty list and reload with new list template
+    listname = request.form.get('list-name')
+    if not listname or not listname.strip():
+        flash('List name is required.')
+        return redirect(url_for('mylists'))
+    
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            # Check if list name is already taken by this user
+            cursor.execute(
+                '''
+                SELECT list_id FROM mylists 
+                WHERE user_id = %s AND list_name = %s
+                ''',
+                (current_user_id, listname)
+            )
+            existing_list = cursor.fetchone()
+            
+            if existing_list:
+                flash('A list with this name already exists.')
+                return redirect(url_for('mylists'))
+            
+            # Create new empty list
+            cursor.execute(
+                '''
+                INSERT INTO mylists (user_id, list_name) 
+                VALUES (%s, %s)
+                ''',
+                (current_user_id, listname)
+            )
+        db.commit()
+    finally:
+        db.close()
+    
     return redirect(url_for('mylists'))
 
 # Delete User List
-@app.route('/delete', methods=['POST'])
+@app.route('/delete_list', methods=['POST'])
 def delete_list():
-    list_id = request.form.get('list_id')
-    if list_id:
+    current_user_id = session.get('user_id')
+    if not current_user_id:
+        flash('Please log in first.')
+        return redirect(url_for('login'))
+    
+    listid = request.form.get('list_id')
+    if listid:
         db = get_db()
         try:
             with db.cursor() as cursor:
-                # table doesn't exist yet
-                cursor.execute("DELETE FROM lists WHERE id = %s", (list_id,))
+                # Delete only if the list belongs to the current user
+                cursor.execute(
+                    "DELETE FROM mylists WHERE list_id = %s AND user_id = %s",
+                    (listid, current_user_id)
+                )
             db.commit()
         finally:
             db.close()
     return redirect(url_for('mylists'))
+
+# Add recipe to list
+@app.route('/add_to_list', methods=['POST'])
+def add_to_list():
+    current_user_id = session.get('user_id')
+    if not current_user_id:
+        flash('Please log in first.')
+        return redirect(url_for('login'))
+    
+    list_id = request.form.get('list_id')
+    recipe_id = request.form.get('recipe_id')
+    
+    if not list_id or not recipe_id:
+        flash('Invalid request.')
+        return redirect(url_for('mylists'))
+    
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            # Check if the list belongs to the user
+            cursor.execute(
+                'SELECT list_id FROM mylists WHERE list_id = %s AND user_id = %s',
+                (list_id, current_user_id)
+            )
+            list_exists = cursor.fetchone()
+            
+            if not list_exists:
+                flash('List not found.')
+                return redirect(url_for('home'))
+            
+            # Check if recipe is already in the list
+            cursor.execute(
+                'SELECT 1 FROM mylists_recipes WHERE list_id = %s AND recipe_id = %s',
+                (list_id, recipe_id)
+            )
+            already_exists = cursor.fetchone()
+            
+            if already_exists:
+                flash('Recipe is already in this list.')
+                return redirect(url_for('recipe_view', recipe_id=recipe_id))
+            
+            # Add recipe to list
+            cursor.execute(
+                'INSERT INTO mylists_recipes (list_id, recipe_id) VALUES (%s, %s)',
+                (list_id, recipe_id)
+            )
+            flash('Recipe added to list.')
+        db.commit()
+    finally:
+        db.close()
+    
+    return redirect(url_for('recipe_view', recipe_id=recipe_id))
+
+
 
 @app.route('/logout')
 def logout():
