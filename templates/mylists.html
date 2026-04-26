@@ -19,16 +19,16 @@
     <div class="main-content">
       <div class="all-lists">
       {% block content %}
-        {% for item in list_names %}
-        <div class="lists-container" data-list-id="{{ item.list_id }}">
+        {% for list in list_names %}
+        <div class="lists-container" data-list-id="{{ list.list_id }}">
           <div class="list-header">
-            <h2>{{ item.list_name }}</h2>
+            <h2>{{ list.list_name }}</h2>
             <button class="view-list-button">View list</button>
           </div>
         <div class="list">
           <!-- preview images of recipes -->
-          {% if item.recipes %}
-            {% for recipe in item.recipes %}
+          {% if list.recipes %}
+            {% for recipe in list.recipes %}
               {% if recipe.recipe_pic %}
                 <img src="/static/{{ recipe.recipe_pic }}" alt="{{ recipe.recipe_name }}" class="recipe-preview" />
               {% else %}
@@ -36,7 +36,7 @@
               {% endif %}
             {% endfor %}
           {% else %}
-            <p class="empty-list-message">No recipes in this list yet.</p>
+            <p class="empty-list-text">No recipes saved yet!</p>
           {% endif %}
         </div>
       </div>
@@ -63,16 +63,12 @@
           <p class="view-list-title"></p>
           <div class="view-list-buttons">
             <button id="delete-list-button">Delete List</button>
-            <button id="edit-list-button">Edit List</button>
             <button id="close-list-button">Close</button>
           </div>
         </div>
         <div class="recipe-container">
-          <div class="recipe-container-row">
-            <div id="single-recipe-container">
-              <img src="https://placehold.co/220x300" alt="preview 1" class="recipe-preview" />
-            </div>
-            
+          <div id="all-recipes">
+            <p class="empty-list-text"></p>
           </div>
         </div>
       </div>
