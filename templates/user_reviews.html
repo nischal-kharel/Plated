@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.username }}'s Reviews - Plated</title>
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <link rel="stylesheet" href="/static/css/user_reviews.css">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <main class="reviews-page">
+
+        <div class="reviews-header">
+            <a href="/profile/{{ user.user_id }}" class="reviews-back-user">
+                <img src="{% if user.profile_pic %}/static/{{ user.profile_pic }}{% else %}/static/media/profileimages/default-pfp.svg{% endif %}"
+                    class="reviews-header-avatar" alt="{{ user.username }}">
+                <span class="reviews-header-username">{{ user.username }}</span>
+            </a>
+            <span class="reviews-header-divider">›</span>
+            <h1 class="reviews-header-title">Reviews</h1>
+        </div>
+
+        <div class="reviews-list">
+            {% if reviews %}
+                {% for review in reviews %}
+                <div class="review-card">
+                    <a href="/recipe/{{ review.recipe_id }}" class="review-recipe-img-link">
+                        {% if review.recipe_pic %}
+                            <img src="/static/{{ review.recipe_pic }}"
+                                 class="review-recipe-img"
+                                 alt="{{ review.recipe_name }}">
+                        {% else %}
+                            <div class="review-recipe-img review-recipe-no-img">No Photo</div>
+                        {% endif %}
+                    </a>
+
+                    <div class="review-card-body">
+                        <div class="review-card-top">
+                            <a href="/recipe/{{ review.recipe_id }}" class="review-recipe-name">{{ review.recipe_name }}</a>
+                            {% if review.score %}
+                                <div class="review-card-score" data-score="{{ review.score }}"></div>
+                            {% endif %}
+                        </div>
+                        <p class="review-card-date">{{ review.created_at }}</p>
+                        <p class="review-card-text">{{ review.body }}</p>
+                    <div class="review-card-footer">
+                            {% if current_user_id != user.user_id %}
+                        <button class="review-card-like {{ 'liked' if review.user_liked else '' }}"
+                            data-review-id="{{ review.review_id }}"
+                            data-liked="{{ 'true' if review.user_liked else 'false' }}"
+                            data-count="{{ review.like_count }}">
+                        {{ '♥' if review.user_liked else '♡' }} {{ review.like_count }} {{ 'like' if review.like_count == 1 else 'likes' }}
+                        </button>
+                    {% else %}
+                        <span class="review-card-likes-static">♥ {{ review.like_count }} {{ 'like' if review.like_count == 1 else 'likes' }}</span>
+                        <button class="review-card-delete"
+                            data-review-id="{{ review.review_id }}"
+                            data-recipe-id="{{ review.recipe_id }}">
+                        Delete review
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+                {% endfor %}
+            {% else %}
+                <p class="reviews-empty">No reviews yet.</p>
+            {% endif %}
+        </div>
+
+    </main>
+    <script src="/static/js/user_reviews.js"></script>
+</body>
+</html>

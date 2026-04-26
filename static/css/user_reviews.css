@@ -1,0 +1,207 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Helvetica, sans-serif;
+}
+
+body {
+    background-color: bisque;
+    min-height: 100vh;
+}
+
+.reviews-page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+}
+
+/* ── Header ── */
+.reviews-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #c4bb9e;
+}
+
+.reviews-back-user {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+}
+
+.reviews-header-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #c4bb9e;
+    transition: box-shadow 0.2s;
+}
+.reviews-header-avatar:hover {
+    box-shadow: 0 0 0 3px rgba(118,200,60,0.3);
+}
+
+.reviews-header-username {
+    font-size: 15px;
+    font-weight: 700;
+    color: #76c83c;
+    transition: text-decoration 0.15s;
+}
+.reviews-back-user:hover .reviews-header-username {
+    text-decoration: underline;
+}
+
+.reviews-header-divider {
+    font-size: 16px;
+    color: #c4bb9e;
+}
+
+.reviews-header-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* ── Cards ── */
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.review-card {
+    display: flex;
+    gap: 24px;
+    padding: 24px;
+    border-radius: 8px;
+    background: #fffcfc;
+    border: 1.5px solid #e0d9ce;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s;
+}
+.review-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+}
+.review-card:last-child { border-bottom: none; }
+
+.review-recipe-img-link { flex-shrink: 0; }
+
+.review-recipe-img {
+    width: 80px;
+    height: 108px;
+    object-fit: cover;
+    border-radius: 5px;
+    display: block;
+    border: 1px solid #c4bb9e;
+    transition: opacity 0.15s, transform 0.15s;
+}
+.review-recipe-img-link:hover .review-recipe-img {
+    opacity: 0.85;
+    transform: scale(1.02);
+}
+
+.review-recipe-no-img {
+    background: #2f3a48;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #888;
+}
+
+.review-card-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 2px;
+}
+
+.review-card-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.review-recipe-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2e2922;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+.review-recipe-name:hover { color: #76c83c; }
+
+.review-card-score {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+.review-card-score img { width: 15px; }
+
+.review-card-date {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 1px;
+}
+
+.review-card-text {
+    font-size: 14px;
+    color: #4a4440;
+    line-height: 1.75;
+    margin-top: 4px;
+}
+
+.review-card-footer {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.review-card-delete {
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: #ccc;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+    margin-left: auto;
+    transition: color 0.15s;
+}
+.review-card-delete:hover {
+    color: #e05555; 
+}
+
+.review-card-like {
+    background: none;
+    border: none;
+    font-size: 13px;
+    color: #bbb;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+    transition: color 0.15s;
+}
+.review-card-like:hover { color: #e05555; }
+.review-card-like.liked { color: #e05555; }
+
+.review-card-likes-static {
+    font-size: 13px;
+    color: #ccc;
+}
+
+.reviews-empty {
+    font-size: 14px;
+    color: #aaa;
+    padding: 60px 0;
+    text-align: center;
+}

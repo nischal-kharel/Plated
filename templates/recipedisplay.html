@@ -8,7 +8,13 @@
 </head>
 <body>
 <main>
-<div class="recipe-page">
+<div class="recipe-page"
+    data-recipe-id="{{ recipe.recipe_id }}"
+    data-user-rating="{{ user_rating or 0 }}"
+    data-prep-time="{{ recipe.prep_time }}"
+    data-cook-time="{{ recipe.cook_time }}"
+    data-servings="{{ recipe.servings }}"
+    data-current-user="{{ current_user_id or '' }}">
 
     <div class="recipe-top">
 
@@ -29,9 +35,14 @@
                 <span class="close-btn" onclick="history.back()">×</span>
             </div>
 
-            <p class="recipe-author">
-                by <a href="/profile/{{ recipe.user_id }}">{{ recipe.username }}</a>
-            </p>
+            <div class="recipe-author">
+                <a href="/profile/{{ recipe.user_id }}" class="author-link">
+                    <img src="{% if recipe.profile_pic %}/static/{{ recipe.profile_pic }}{% else %}/static/media/profileimages/default-pfp.svg{% endif %}" 
+                    class="author-avatar" 
+                    alt="{{ recipe.username }}">
+                </a>
+            <span class="author-by">by <a href="/profile/{{ recipe.user_id }}" class="author-name">{{ recipe.username }}</a></span>
+            </div>
 
             {% if recipe.description %}
                 <p class="recipe-description">{{ recipe.description }}</p>
@@ -152,16 +163,79 @@
         </div>
 
     </div> <!-- end recipe-body -->
+    <!-- REVIEW SECTION -->
+<div class="review-section">
+
+    <div class="review-section-header">
+        <h2 class="review-section-title">Reviews</h2>
+        <button class="write-review-btn" id="writeReviewBtn">+ Add Review</button>
+    </div>
+
+<!-- Review Modal Overlay -->
+<div class="review-modal-overlay" id="reviewOverlay" style="display:none;">
+    <div class="review-modal-card">
+        <div class="review-modal-header">
+            <h2 class="review-modal-title">I tried...</h2>
+            <span class="review-modal-close" id="cancelReview">×</span>
+        </div>
+
+        <div class="review-modal-body">
+            <div class="review-modal-photo">
+                {% if recipe.recipe_pic %}
+                    <img src="/static/{{ recipe.recipe_pic }}" alt="{{ recipe.recipe_name }}">
+                {% else %}
+                    <div class="review-modal-no-photo">No Photo</div>
+                {% endif %}
+            </div>
+            <div class="review-modal-right">
+                <p class="review-modal-recipe-name">{{ recipe.recipe_name }}</p>
+                <textarea class="review-modal-textarea" id="reviewBody" 
+                          placeholder="Share your thoughts on this recipe..." 
+                          maxlength="1000"></textarea>
+            </div>
+        </div>
+
+<div class="review-modal-footer">
+    <div class="review-modal-tag-col">
+        <span class="review-modal-label">Tags</span>
+        <div class="review-tag-box" id="reviewTagBox">
+            <input type="text" id="reviewTagInput" placeholder="e.g. delicious, spicy">
+        </div>
+    </div>
+
+    <div class="review-modal-rating-col">
+        <span class="review-modal-label">Rating</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+            <div class="compose-rating" id="composeRating"></div>
+            <span id="composeRatingText" style="font-size:12px; color:#888;"></span>
+        </div>
+    </div>
+
+    <div class="review-modal-chars">
+        <span id="charCount">0 / 1000</span>
+    </div>
+    <button class="review-modal-submit" id="submitReview">Add Review</button>
+</div>
+    </div>
+</div>
+
+    <!-- sort Tabs -->
+    <div class="review-tabs">
+        <button class="review-tab active" data-sort="recent">Recent</button>
+        <button class="review-tab" data-sort="popular">Popular</button>
+        <button class="review-tab" data-sort="friends">Friends</button>
+    </div>
+
+    <!-- review List -->
+    <div class="review-list" id="reviewList">
+        <p class="review-empty">Loading reviews...</p>
+    </div>
+
+</div>
 
 </div> <!-- end recipe-page -->
+
 </main>
-<script>
-    const recipeId = {{ recipe.recipe_id }};
-    const userRating = {{ user_rating or 0 }};
-    const prepTime = {{ recipe.prep_time }};
-    const cookTime = {{ recipe.cook_time }};
-    const servings = {{ recipe.servings }};
-</script>
 <script src="/static/js/recipedisplay.js"></script>
 </body>
 </html>

@@ -311,6 +311,52 @@ def upload_profile_picture():
 
     return {'success': True, 'profile_pic': url_for('static', filename=profile_pic_path)}
 
+@app.route('/profile/<int:user_id>/reviews')
+def user_reviews(user_id):
+    current_user_id = session.get('user_id')
+    if not current_user_id:
+        flash('Please log in first.')
+        return redirect(url_for('login'))
+
+    user = get_user_by_id(user_id)
+    if not user:
+        flash('User not found.')
+        return redirect(url_for('home'))
+
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute('''
+                SELECT 
+                    rr.review_id, rr.body, rr.score, rr.created_at,
+                    r.recipe_id, r.recipe_name, r.recipe_pic,
+                    COUNT(rl.user_id) AS like_count,
+                    MAX(CASE WHEN rl.user_id = %s THEN 1 ELSE 0 END) AS user_liked
+                FROM recipe_reviews rr
+                JOIN recipes r ON rr.recipe_id = r.recipe_id
+                LEFT JOIN review_likes rl ON rl.review_id = rr.review_id
+                WHERE rr.user_id = %s
+                GROUP BY rr.review_id, rr.body, rr.score, rr.created_at,
+                         r.recipe_id, r.recipe_name, r.recipe_pic
+                ORDER BY rr.created_at DESC
+            ''', (current_user_id, user_id))
+            reviews = cursor.fetchall()
+    finally:
+        db.close()
+
+    for r in reviews:
+        r['score'] = float(r['score']) if r['score'] else None
+        r['like_count'] = int(r['like_count'])
+        r['user_liked'] = bool(r['user_liked'])
+        r['created_at'] = r['created_at'].strftime('%b %d, %Y')
+
+    return render_template(
+        'user_reviews.html',
+        user=user,
+        reviews=reviews,
+        current_user_id=current_user_id
+    )
+
 @app.route('/users')
 def users():
     current_user_id = session.get('user_id')
@@ -471,7 +517,7 @@ def recipe_view(recipe_id):
     try:
         with db.cursor() as cursor:
             cursor.execute(
-                '''SELECT r.*, u.username
+                '''SELECT r.*, u.username, u.profile_pic
                    FROM recipes r
                    JOIN users u ON r.user_id = u.user_id
                    WHERE r.recipe_id = %s''',
@@ -515,10 +561,9 @@ def recipe_view(recipe_id):
         avg_rating=avg_rating,
         rating_count=rating_count,
         user_rating=user_rating,
-        user_lists=user_lists
+        user_lists=user_lists,
+        current_user_id=user_id
     )
-
-
 @app.route('/rate/<int:recipe_id>', methods=['POST'])
 def rate_recipe(recipe_id):
     user_id = session.get('user_id')
@@ -550,6 +595,151 @@ def rate_recipe(recipe_id):
         db.close()
 
     return {'success': True, 'new_avg': new_avg}
+
+@app.route('/recipe/<int:recipe_id>/reviews')
+def get_reviews(recipe_id):
+    user_id = session.get('user_id')
+    sort = request.args.get('sort', 'recent')  # recent | popular | friends
+
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            if sort == 'popular':
+                order = 'COUNT(rl.user_id) DESC'
+            elif sort == 'friends' and user_id:
+                order = 'rr.created_at DESC'
+            else:
+                order = 'rr.created_at DESC'
+
+            friends_join = ''
+            friends_where = ''
+            if sort == 'friends' and user_id:
+                friends_join = 'JOIN follows f ON f.following_id = rr.user_id AND f.follower_id = %s'
+                friends_where = ''
+                params = (user_id, recipe_id, user_id or 0)
+            else:
+                params = (recipe_id, user_id or 0)
+
+            if sort == 'friends' and user_id:
+                cursor.execute(f'''
+                    SELECT rr.review_id, rr.body, rr.score, rr.created_at,
+                           u.user_id, u.username, u.profile_pic,
+                           COUNT(rl.user_id) AS like_count,
+                           MAX(CASE WHEN rl.user_id = %s THEN 1 ELSE 0 END) AS user_liked
+                    FROM recipe_reviews rr
+                    JOIN users u ON rr.user_id = u.user_id
+                    {friends_join}
+                    LEFT JOIN review_likes rl ON rl.review_id = rr.review_id
+                    WHERE rr.recipe_id = %s
+                    GROUP BY rr.review_id, rr.body, rr.score, rr.created_at,
+                             u.user_id, u.username, u.profile_pic
+                    ORDER BY {order}
+                    LIMIT 50
+                ''', params)
+            else:
+                cursor.execute(f'''
+                    SELECT rr.review_id, rr.body, rr.score, rr.created_at,
+                           u.user_id, u.username, u.profile_pic,
+                           COUNT(rl.user_id) AS like_count,
+                           MAX(CASE WHEN rl.user_id = %s THEN 1 ELSE 0 END) AS user_liked
+                    FROM recipe_reviews rr
+                    JOIN users u ON rr.user_id = u.user_id
+                    LEFT JOIN review_likes rl ON rl.review_id = rr.review_id
+                    WHERE rr.recipe_id = %s
+                    GROUP BY rr.review_id, rr.body, rr.score, rr.created_at,
+                             u.user_id, u.username, u.profile_pic
+                    ORDER BY {order}
+                    LIMIT 50
+                ''', (user_id or 0, recipe_id))
+
+            reviews = cursor.fetchall()
+
+        # get current user's own review if any
+        user_review = None
+        if user_id:
+            with db.cursor() as cursor:
+                cursor.execute(
+                    'SELECT * FROM recipe_reviews WHERE user_id = %s AND recipe_id = %s',
+                    (user_id, recipe_id)
+                )
+                user_review = cursor.fetchone()
+
+    finally:
+        db.close()
+
+    for r in reviews:
+        r['created_at'] = r['created_at'].strftime('%b %d, %Y')
+        r['score'] = float(r['score']) if r['score'] else None
+        r['like_count'] = int(r['like_count'])
+        r['user_liked'] = bool(r['user_liked'])
+
+    if user_review:
+        user_review['created_at'] = user_review['created_at'].strftime('%b %d, %Y')
+        user_review['score'] = float(user_review['score']) if user_review['score'] else None
+
+    return {'reviews': reviews, 'user_review': user_review}
+
+
+@app.route('/recipe/<int:recipe_id>/review', methods=['POST'])
+def submit_review(recipe_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return {'success': False, 'error': 'Login required'}, 401
+
+    data = request.get_json()
+    body = data.get('body', '').strip()
+    score = data.get('score')  # optional
+
+    if not body:
+        return {'success': False, 'error': 'Review text required'}, 400
+
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute('''
+                INSERT INTO recipe_reviews (user_id, recipe_id, body, score)
+                VALUES (%s, %s, %s, %s)
+                ON DUPLICATE KEY UPDATE body = %s, score = %s, updated_at = NOW()
+            ''', (user_id, recipe_id, body, score, body, score))
+        db.commit()
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+    finally:
+        db.close()
+
+    return {'success': True}
+
+
+@app.route('/review/<int:review_id>/like', methods=['POST'])
+def like_review(review_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return {'success': False}, 401
+
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                'SELECT 1 FROM review_likes WHERE user_id = %s AND review_id = %s',
+                (user_id, review_id)
+            )
+            if cursor.fetchone():
+                cursor.execute(
+                    'DELETE FROM review_likes WHERE user_id = %s AND review_id = %s',
+                    (user_id, review_id)
+                )
+                liked = False
+            else:
+                cursor.execute(
+                    'INSERT INTO review_likes (user_id, review_id) VALUES (%s, %s)',
+                    (user_id, review_id)
+                )
+                liked = True
+        db.commit()
+    finally:
+        db.close()
+
+    return {'success': True, 'liked': liked}
 
 
 @app.route('/like/<int:recipe_id>', methods=['POST'])
@@ -583,6 +773,27 @@ def like_recipe(recipe_id):
         db.close()
 
     return {'success': True, 'liked': liked}
+
+@app.route('/review/<int:review_id>/delete', methods=['POST'])
+def delete_review(review_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return {'success': False, 'error': 'Login required'}, 401
+
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                'DELETE FROM recipe_reviews WHERE review_id = %s AND user_id = %s',
+                (review_id, user_id)
+            )
+        db.commit()
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+    finally:
+        db.close()
+
+    return {'success': True}
 
 @app.route('/meals')
 def meal_page():
@@ -1090,3 +1301,4 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
+
