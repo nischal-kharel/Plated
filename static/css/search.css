@@ -53,6 +53,24 @@ body {
     display: block;
 }
 
+a.recipe-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.recipe-card-name {
+    padding: 10px;
+    font-size: 13px;
+    word-break: break-word;
+}
+
+.no-results-msg {
+    font-size: 18px;
+    color: #666;
+    margin-top: 40px;
+}
+
 /* right side */
 .filters-section {
     width: 300px;

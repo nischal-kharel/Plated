@@ -11,23 +11,8 @@
     <div class="search-layout">
 
         <section class="results-section">
-            <div class="results-row">
-                <div class="recipe-card">
-                    <img src="https://placehold.co/180x240" alt="Recipe 1">
-                </div>
-
-                <div class="recipe-card">
-                    <img src="https://placehold.co/180x240" alt="Recipe 2">
-                </div>
-
-                <div class="recipe-card">
-                    <img src="https://placehold.co/180x240" alt="Recipe 3">
-                </div>
-
-                <div class="recipe-card">
-                    <img src="https://placehold.co/180x240" alt="Recipe 4">
-                </div>
-            </div>
+            <div id="results-grid" class="results-row"></div>
+            <p id="no-results" class="no-results-msg" style="display:none">No recipes match your filters.</p>
         </section>
 
         <aside class="filters-section">
@@ -39,11 +24,11 @@
                     Dietary preference
                 </button>
                 <div class="filter-options">
-                    <label><input type="checkbox"> Vegetarian</label>
-                    <label><input type="checkbox"> Pescatarian</label>
-                    <label><input type="checkbox"> Lactose intolerant</label>
-                    <label><input type="checkbox"> Nut-free</label>
-                    <label><input type="checkbox"> Gluten-free</label>
+                    <label><input type="checkbox" class="dietary-cb" value="vegetarian"> Vegetarian</label>
+                    <label><input type="checkbox" class="dietary-cb" value="pescatarian"> Pescatarian</label>
+                    <label><input type="checkbox" class="dietary-cb" value="lactose-intolerant"> Lactose-Intolerant</label>
+                    <label><input type="checkbox" class="dietary-cb" value="nut-free"> Nut-free</label>
+                    <label><input type="checkbox" class="dietary-cb" value="gluten-free"> Gluten-free</label>
                 </div>
             </div>
 
@@ -53,9 +38,9 @@
                     Cook time
                 </button>
                 <div class="filter-options">
-                    <label><input type="checkbox"> Under 15 min</label>
-                    <label><input type="checkbox"> Under 30 min</label>
-                    <label><input type="checkbox"> Under 1 hour</label>
+                    <label><input type="checkbox" class="cooktime-cb" value="15"> Under 15 min</label>
+                    <label><input type="checkbox" class="cooktime-cb" value="30"> Under 30 min</label>
+                    <label><input type="checkbox" class="cooktime-cb" value="60"> Under 1 hour</label>
                 </div>
             </div>
 
@@ -65,10 +50,10 @@
                     Meal type
                 </button>
                 <div class="filter-options">
-                    <label><input type="checkbox"> Breakfast</label>
-                    <label><input type="checkbox"> Lunch</label>
-                    <label><input type="checkbox"> Dinner</label>
-                    <label><input type="checkbox"> Dessert</label>
+                    <label><input type="checkbox" class="mealtype-cb" value="breakfast"> Breakfast</label>
+                    <label><input type="checkbox" class="mealtype-cb" value="lunch"> Lunch</label>
+                    <label><input type="checkbox" class="mealtype-cb" value="dinner"> Dinner</label>
+                    <label><input type="checkbox" class="mealtype-cb" value="dessert"> Dessert</label>
                 </div>
             </div>
 
@@ -78,9 +63,9 @@
                     Rating
                 </button>
                 <div class="filter-options">
-                    <label><input type="checkbox"> 4+ plates</label>
-                    <label><input type="checkbox"> 3+ plates</label>
-                    <label><input type="checkbox"> 2+ plates</label>
+                    <label><input type="checkbox" class="rating-cb" value="4"> 4+ plates</label>
+                    <label><input type="checkbox" class="rating-cb" value="3"> 3+ plates</label>
+                    <label><input type="checkbox" class="rating-cb" value="2"> 2+ plates</label>
                 </div>
             </div>
         </aside>
