@@ -336,6 +336,65 @@ def inject_nav_user():
 def recipe_page():
     return render_template('recipes_page.html')
 
+@app.route('/search')
+def search_page():
+    return render_template('search.html')
+
+@app.route('/search/results')
+def search_results():
+    dietary    = request.args.getlist('dietary')
+    cook_times = request.args.getlist('cook_time', type=int)
+    meal_types = request.args.getlist('meal_type')
+    min_rating = request.args.get('rating', type=float)
+
+    conditions = []
+    params = []
+
+    if dietary:
+        diet_clauses = ['FIND_IN_SET(%s, r.dietary_preference)' for _ in dietary]
+        conditions.append('(' + ' OR '.join(diet_clauses) + ')')
+        params.extend(dietary)
+
+    if cook_times:
+        conditions.append('r.cook_time <= %s')
+        params.append(max(cook_times))
+
+    if meal_types:
+        meal_clauses = ['FIND_IN_SET(%s, r.meal_type)' for _ in meal_types]
+        conditions.append('(' + ' OR '.join(meal_clauses) + ')')
+        params.extend(meal_types)
+
+    where_clause = ('WHERE ' + ' AND '.join(conditions)) if conditions else ''
+    having_clause = ''
+    if min_rating is not None:
+        having_clause = 'HAVING avg_rating >= %s'
+        params.append(min_rating)
+
+    query = '''
+        SELECT r.recipe_id, r.recipe_name, r.recipe_pic,
+               COALESCE(AVG(rr.score), 0) AS avg_rating
+        FROM recipes r
+        LEFT JOIN recipe_ratings rr ON r.recipe_id = rr.recipe_id
+        ''' + where_clause + '''
+        GROUP BY r.recipe_id, r.recipe_name, r.recipe_pic
+        ''' + having_clause + '''
+        ORDER BY MAX(r.created_at) DESC
+        LIMIT 40
+    '''
+
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(query, params)
+            recipes = cursor.fetchall()
+    finally:
+        db.close()
+
+    for r in recipes:
+        r['avg_rating'] = float(r['avg_rating'])
+
+    return {'recipes': recipes}
+
 @app.route('/recipes/new', methods=['GET', 'POST'])
 def new_recipe():
     if 'user_id' not in session:
@@ -353,7 +412,6 @@ def new_recipe():
     prep_time          = int(request.form.get('prep_time'))
     cook_time          = int(request.form.get('cook_time'))
     servings           = int(request.form.get('servings'))
-    dietary_preference = request.form.get('dietary_preference', 'no-restriction')
 
     if not recipe_name or not ingredients or not directions:
         return {'success': False, 'error': 'Missing required fields.'}, 400
