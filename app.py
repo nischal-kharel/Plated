@@ -20,7 +20,7 @@ def get_user_by_id(user_id):
     try:
         with db.cursor() as cursor:
             cursor.execute(
-                'SELECT user_id, username, email, profile_pic FROM users WHERE user_id = %s',
+                'SELECT user_id, username, email, profile_pic, bio FROM users WHERE user_id = %s',
                 (user_id,)
             )
             return cursor.fetchone()
@@ -894,6 +894,31 @@ def unfollow_user(user_id):
         return redirect(url_for('view_profile', user_id=return_profile_id))
 
     return redirect(url_for('view_profile', user_id=user_id))
+
+@app.route('/change_bio', methods=['POST'])
+def change_bio():
+    current_user_id = session.get('user_id')
+
+    if not current_user_id:
+        flash('Please log in first.')
+        return redirect(url_for('login'))
+    
+    new_bio = request.form.get('profile-bio')
+
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''
+                UPDATE users SET bio = %s WHERE user_id = %s
+                ''',
+                (new_bio, current_user_id)
+            )
+        db.commit()
+    finally:
+        db.close()
+
+    return redirect(url_for('view_profile', user_id=current_user_id))
 
 @app.route('/mylists')
 def mylists():

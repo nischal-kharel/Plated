@@ -51,7 +51,11 @@
             </div>
             <section class="content-section">
                 <div class="bio-section">
-                    <p id="bio">This is my bio. I love recipes!</p>
+                  {% if user.bio %}
+                    <p id="bio">{{ user.bio }}</p>
+                  {% else %}
+                    <p id="bio"></p>
+                  {% endif %}
                     {% if current_user_id == user.user_id %}
                         <button id="edit-profile-button">Edit Profile</button>
                     {% endif %}
@@ -60,10 +64,14 @@
                 <div id="backdrop"></div> <!-- signify to user no background interaction is allowed while popup is displayed-->
             
                 <div class="edit-popup-card" id="edit-overlay">
-                  <p class="popup-title">Edit bio:</p>
-                  <textarea id="bio-text" name="profile bio" maxlength="300"></textarea>
-                  <p class="popup-text">Max chars: 300</p>
-                  <button id="save-profile-button">Save</button>
+                  <form action = "{{ url_for('change_bio')}}" method = "POST">
+                    <p class="popup-title">Edit bio:</p>
+                    <textarea id="bio-text" name="profile-bio" maxlength="300"></textarea>
+                    <p class="popup-text">Max chars: 300</p>
+                    <button type="submit" id="save-profile-button">Save</button>
+                  </form>
+
+                  
                 </div>
             
                 <div class="users-popup-card" id="users-overlay">
