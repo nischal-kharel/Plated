@@ -1,98 +1,90 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/navbar.css">
-    <title>nav bar</title>
-</head>
-<body>
-    <nav>
-        <div class="logo-body">
-            <a href="/home">
-                <img src="/static/media/ratingimages/fullplate.png" class="logo">
-            </a>
-            <span class="logo-name">Plated</span>
-        </div>
-    
-        <ul>
-            <li><a href="/home">Home</a></li>
-            <li><a href="/journal">My Journal</a></li>
-            <li class="find-body">
-                <a href="#">Find ▾</a>
-                <div class="find-struct">
-                    <a href="/search" class="f-drop-down-link">
-                        <p>Recipes</p>
-                    </a>
-                    <a href="#" class="f-drop-down-link">
-                        <p>Lists</p>
-                    </a>
-                    <a href="#" class="f-drop-down-link">
-                        <p>Friends</p>
-                    </a>
-                </div>
-            </li>
-        </ul>
-    
-        <div class="search-bar">
-            <input type="text" id="navSearchInput" placeholder="Search recipes, lists...">
-            <span class="search-icon">⌕</span>
-        </div>
-    
-        <div class="nav-right">
-            <div class="plate-entry">
-                <div class="plate-btn">
-                    <div class="plate-badge">
-                        <div class="plate-badge-overlay">+</div>
-                        <span class="plate-badge-label">Plate</span>
-                    </div>
-                </div>
-                <div class="entry-options">
-                    <a href="/meals" class="f-drop-down-link">
-                        <p>Meal</p>
-                    </a>
-                    <a href="/recipes/new" class="f-drop-down-link">
-                        <p>Recipe</p>
-                    </a>
+<nav>
+    <div class="logo-body">
+        <a href="/home">
+            <img src="/static/media/ratingimages/fullplate.png" class="logo">
+        </a>
+        <span class="logo-name">Plated</span>
+    </div>
+
+    <ul>
+        <li><a href="/home">Home</a></li>
+        <li><a href="/journal">My Journal</a></li>
+        <li class="find-body">
+            <a href="#">Find ▾</a>
+            <div class="find-struct">
+                <a href="/search" class="f-drop-down-link">
+                    <p>Recipes</p>
+                </a>
+                <a href="#" class="f-drop-down-link">
+                    <p>Lists</p>
+                </a>
+                <a href="#" class="f-drop-down-link">
+                    <p>Friends</p>
+                </a>
+            </div>
+        </li>
+    </ul>
+
+    <div class="search-bar">
+        <input type="text" id="navSearchInput" placeholder="Search recipes, lists...">
+        <span class="search-icon">⌕</span>
+    </div>
+
+    <div class="nav-right">
+        <div class="plate-entry">
+            <div class="plate-btn">
+                <div class="plate-badge">
+                    <div class="plate-badge-overlay">+</div>
+                    <span class="plate-badge-label">Plate</span>
                 </div>
             </div>
-        
-            <div class="pfp-struct">
-                {% if nav_user and nav_user.profile_pic %}
-                    <img src="{{ url_for('static', filename=nav_user.profile_pic) }}" class="pfp">
-                {% else %}
-                    <img src="/static/media/profileimages/default-pfp.svg" class="pfp">
-                {% endif %}
-                <div class="drop-down-struct">
-                    <div class="drop-down">
-                        <div class="user-info">
-                            {% if nav_user and nav_user.profile_pic %}
-                                <img src="{{ url_for('static', filename=nav_user.profile_pic) }}">
-                            {% else %}
-                                <img src="/static/media/profileimages/default-pfp.svg">
-                            {% endif %}
-                            <h2>{{ nav_user.username.upper() if nav_user else 'GUEST' }}</h2>
-                        </div>
-                        <hr>
-                    </div>
-                    <a href="/profile" class="drop-down-link">
-                        <p>Profile</p>
-                    </a>
-                    <a href="/profile/{{ nav_user.user_id }}/reviews" class="drop-down-link">
-                        <p>Reviews</p>
-                    </a>
-                    <a href="#" class="drop-down-link">
-                        <p>Recipes</p>
-                    </a>
-                    <a href="/mylists" class="drop-down-link">
-                        <p>Lists</p>
-                    </a>
-                    <a href="/logout" class="drop-down-link">
-                        <p>Sign Out</p>
-                    </a>
-                </div>
+            <div class="entry-options">
+                <a href="/meals" class="f-drop-down-link">
+                    <p>Meal</p>
+                </a>
+                <a href="/recipes/new" class="f-drop-down-link">
+                    <p>Recipe</p>
+                </a>
             </div>
         </div>
-    </nav>
+
+        <div class="pfp-struct">
+            {% if nav_user and nav_user.profile_pic %}
+                <img src="{{ url_for('static', filename=nav_user.profile_pic) }}" class="pfp">
+            {% else %}
+                <img src="/static/media/profileimages/default-pfp.svg" class="pfp">
+            {% endif %}
+            <div class="drop-down-struct">
+                <div class="drop-down">
+                    <div class="user-info">
+                        {% if nav_user and nav_user.profile_pic %}
+                            <img src="{{ url_for('static', filename=nav_user.profile_pic) }}">
+                        {% else %}
+                            <img src="/static/media/profileimages/default-pfp.svg">
+                        {% endif %}
+                        <h2>{{ nav_user.username.upper() if nav_user else 'GUEST' }}</h2>
+                    </div>
+                    <hr>
+                </div>
+                <a href="/profile" class="drop-down-link">
+                    <p>Profile</p>
+                </a>
+                <a href="/profile/{{ nav_user.user_id }}/reviews" class="drop-down-link">
+                    <p>Reviews</p>
+                </a>
+                <a href="#" class="drop-down-link">
+                    <p>Recipes</p>
+                </a>
+                <a href="/mylists" class="drop-down-link">
+                    <p>Lists</p>
+                </a>
+                <a href="/logout" class="drop-down-link">
+                    <p>Sign Out</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
 <script>
     document.getElementById('navSearchInput').addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && this.value.trim()) {
@@ -100,5 +92,3 @@
         }
     });
 </script>
-</body>
-</html>

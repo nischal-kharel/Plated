@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ recipe.recipe_name }} - Plated</title>
+    <link rel="stylesheet" href="/static/css/navbar.css">
     <link rel="stylesheet" href="/static/css/recipedisplay.css">
 </head>
 <body>
+{% include 'navbar.html' %}
 <main>
 <div class="recipe-page"
     data-recipe-id="{{ recipe.recipe_id }}"
