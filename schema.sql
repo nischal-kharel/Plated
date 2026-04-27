@@ -231,3 +231,31 @@ CREATE TABLE mylists_recipes (
     FOREIGN KEY (list_id) REFERENCES mylists(list_id) ON DELETE CASCADE,
     FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id) ON DELETE CASCADE
 );
+
+-- ============================================
+-- RECIPE REVIEWS
+-- One review per user per recipe, with optional score.
+-- ============================================
+CREATE TABLE recipe_reviews (
+    review_id  INT AUTO_INCREMENT PRIMARY KEY,
+    user_id    INT  NOT NULL,
+    recipe_id  INT  NOT NULL,
+    body       TEXT NOT NULL,
+    score      DECIMAL(2,1) NULL CHECK (score BETWEEN 0.5 AND 5.0 AND score * 2 = FLOOR(score * 2)),
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY one_review_per_user (user_id, recipe_id),
+    FOREIGN KEY (user_id)   REFERENCES users(user_id)     ON DELETE CASCADE,
+    FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id) ON DELETE CASCADE
+);
+
+-- ============================================
+-- REVIEW LIKES
+-- ============================================
+CREATE TABLE review_likes (
+    user_id   INT NOT NULL,
+    review_id INT NOT NULL,
+    PRIMARY KEY (user_id, review_id),
+    FOREIGN KEY (user_id)   REFERENCES users(user_id)            ON DELETE CASCADE,
+    FOREIGN KEY (review_id) REFERENCES recipe_reviews(review_id) ON DELETE CASCADE
+);

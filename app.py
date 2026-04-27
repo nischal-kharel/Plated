@@ -388,33 +388,47 @@ def search_page():
 
 @app.route('/search/results')
 def search_results():
+    q          = request.args.get('q', '').strip()
     dietary    = request.args.getlist('dietary')
     cook_times = request.args.getlist('cook_time', type=int)
     meal_types = request.args.getlist('meal_type')
     min_rating = request.args.get('rating', type=float)
 
-    conditions = []
-    params = []
+    conditions  = []
+    where_params  = []
+    having_params = []
+    order_params  = []
+
+    if q:
+        conditions.append('MATCH(r.recipe_name, r.description, r.ingredients) AGAINST(%s IN NATURAL LANGUAGE MODE)')
+        where_params.append(q)
 
     if dietary:
         diet_clauses = ['FIND_IN_SET(%s, r.dietary_preference)' for _ in dietary]
         conditions.append('(' + ' OR '.join(diet_clauses) + ')')
-        params.extend(dietary)
+        where_params.extend(dietary)
 
     if cook_times:
         conditions.append('r.cook_time <= %s')
-        params.append(max(cook_times))
+        where_params.append(max(cook_times))
 
     if meal_types:
         meal_clauses = ['FIND_IN_SET(%s, r.meal_type)' for _ in meal_types]
         conditions.append('(' + ' OR '.join(meal_clauses) + ')')
-        params.extend(meal_types)
+        where_params.extend(meal_types)
 
     where_clause = ('WHERE ' + ' AND '.join(conditions)) if conditions else ''
+
     having_clause = ''
     if min_rating is not None:
         having_clause = 'HAVING avg_rating >= %s'
-        params.append(min_rating)
+        having_params.append(min_rating)
+
+    if q:
+        order_clause = 'ORDER BY MATCH(r.recipe_name, r.description, r.ingredients) AGAINST(%s IN NATURAL LANGUAGE MODE) DESC, MAX(r.created_at) DESC'
+        order_params.append(q)
+    else:
+        order_clause = 'ORDER BY MAX(r.created_at) DESC'
 
     query = '''
         SELECT r.recipe_id, r.recipe_name, r.recipe_pic,
@@ -424,14 +438,14 @@ def search_results():
         ''' + where_clause + '''
         GROUP BY r.recipe_id, r.recipe_name, r.recipe_pic
         ''' + having_clause + '''
-        ORDER BY MAX(r.created_at) DESC
+        ''' + order_clause + '''
         LIMIT 40
     '''
 
     db = get_db()
     try:
         with db.cursor() as cursor:
-            cursor.execute(query, params)
+            cursor.execute(query, where_params + having_params + order_params)
             recipes = cursor.fetchall()
     finally:
         db.close()

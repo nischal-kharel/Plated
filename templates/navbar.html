@@ -34,7 +34,7 @@
         </ul>
     
         <div class="search-bar">
-            <input type="text" placeholder="Search recipes, lists...">
+            <input type="text" id="navSearchInput" placeholder="Search recipes, lists...">
             <span class="search-icon">⌕</span>
         </div>
     
@@ -93,5 +93,12 @@
             </div>
         </div>
     </nav>
+<script>
+    document.getElementById('navSearchInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && this.value.trim()) {
+            window.location.href = '/search?q=' + encodeURIComponent(this.value.trim());
+        }
+    });
+</script>
 </body>
 </html>

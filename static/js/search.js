@@ -9,6 +9,9 @@ for (let i = 0; i < toggles.length; i++) {
 function getFilters() {
     const params = new URLSearchParams();
 
+    const q = new URLSearchParams(window.location.search).get('q');
+    if (q) params.set('q', q);
+
     document.querySelectorAll('.dietary-cb:checked').forEach(function(cb) {
         params.append('dietary', cb.value);
     });
@@ -70,5 +73,12 @@ function fetchRecipes() {
 document.querySelectorAll('.filter-options input[type="checkbox"]').forEach(function(cb) {
     cb.addEventListener('change', fetchRecipes);
 });
+
+// pre-populate navbar search input if arriving from a search query
+const pageQuery = new URLSearchParams(window.location.search).get('q');
+if (pageQuery) {
+    const navInput = document.getElementById('navSearchInput');
+    if (navInput) navInput.value = pageQuery;
+}
 
 fetchRecipes();
