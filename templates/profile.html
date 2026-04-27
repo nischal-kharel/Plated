@@ -38,11 +38,11 @@
                     </div>
                     {% if current_user_id != user.user_id %}
                         {% if following_status %}
-                            <form action = "{{ url_for('unfollow_user', user_id = user.user_id) }}" method = "POST">
+                            <form action = "{{ url_for('social.unfollow_user', user_id = user.user_id) }}" method = "POST">
                                 <button type="submit" class="follow-btn following"> Following </button>
                             </form>
                         {% else %}
-                            <form action = "{{ url_for('follow_user', user_id = user.user_id) }}" method = "POST">
+                            <form action = "{{ url_for('social.follow_user', user_id = user.user_id) }}" method = "POST">
                                 <button type="submit" class="follow-btn"> Follow </button>
                             </form>
                         {% endif %}
@@ -64,7 +64,7 @@
                 <div id="backdrop"></div> <!-- signify to user no background interaction is allowed while popup is displayed-->
             
                 <div class="edit-popup-card" id="edit-overlay">
-                  <form action = "{{ url_for('change_bio')}}" method = "POST">
+                  <form action = "{{ url_for('profile.change_bio')}}" method = "POST">
                     <p class="popup-title">Edit bio:</p>
                     <textarea id="bio-text" name="profile-bio" maxlength="300"></textarea>
                     <p class="popup-text">Max chars: 300</p>
@@ -92,7 +92,7 @@
                 <div class="card-row">
                     {% if favorite_recipes %}
                         {% for recipe in favorite_recipes %}
-                            <a href="{{ url_for('recipe_view', recipe_id=recipe.recipe_id) }}">
+                            <a href="{{ url_for('recipes.recipe_view', recipe_id=recipe.recipe_id) }}">
                                 {% if recipe.recipe_pic %}
                                     <img src="{{ url_for('static', filename=recipe.recipe_pic) }}" alt="{{ recipe.recipe_name }}" class="post-card" />
                                 {% else %}
@@ -114,7 +114,7 @@
                 <div class="card-row">
                     {% if recent_meals %}
                         {% for meal in recent_meals %}
-                            <a href="{{ url_for('journal_page') }}">
+                            <a href="{{ url_for('meals.journal_page') }}">
                                 {% if meal.journal_pic %}
                                     <img src="{{ url_for('static', filename=meal.journal_pic) }}" alt="{{ meal.journal_name }}" class="post-card" />
                                 {% else %}

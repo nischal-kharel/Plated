@@ -97,7 +97,7 @@
                 <div class="add-struct">
                     {% if user_lists %}
                         {% for list in user_lists %}
-                        <form action="{{ url_for('add_to_list') }}" method="POST" style="display:inline;">
+                        <form action="{{ url_for('lists.add_to_list') }}" method="POST" style="display:inline;">
                             <input type="hidden" name="list_id" value="{{ list.list_id }}">
                             <input type="hidden" name="recipe_id" value="{{ recipe.recipe_id }}">
                             <button type="submit" class="f-drop-down-link">
