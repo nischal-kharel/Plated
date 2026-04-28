@@ -18,6 +18,7 @@ main {
     margin: 0;
 }
 
+/* ── Welcome ── */
 .home-welcome {
     padding: 32px 40px 8px 40px;
 }
@@ -81,49 +82,82 @@ main {
 
 /* ── Carousel ── */
 .recipe-carousel {
-    display: flex;
-    gap: 16px;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 0 16px 16px 16px;
-    scrollbar-width: none;
+    --items: 8;
+    --duration: 32s;
+    --item-width: 120px;
+    --item-height: 160px;
+    --gap: 20px;
+
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: calc(var(--item-height) + 52px);
+    margin-bottom: 12px;
 }
 
-.recipe-carousel::-webkit-scrollbar {
-    display: none;
+.recipe-carousel:hover .carousel-card {
+    animation-play-state: paused;
 }
 
 /* ── Cards ── */
 .carousel-card {
+    position: absolute;
+    top: 8px;
+    left: calc(-1 * (var(--item-width) + var(--gap)));
+    width: var(--item-width);
     display: flex;
     flex-direction: column;
     text-decoration: none;
     color: inherit;
-    flex-shrink: 0;
-    width: 120px;
-    font-family: Helvetica, sans-serif;
+    animation: scroll-cards var(--duration) linear infinite;
+}
+
+.carousel-card:nth-child(1)  { animation-delay: calc(var(--duration) / var(--items) * 0 * -1); }
+.carousel-card:nth-child(2)  { animation-delay: calc(var(--duration) / var(--items) * 1 * -1); }
+.carousel-card:nth-child(3)  { animation-delay: calc(var(--duration) / var(--items) * 2 * -1); }
+.carousel-card:nth-child(4)  { animation-delay: calc(var(--duration) / var(--items) * 3 * -1); }
+.carousel-card:nth-child(5)  { animation-delay: calc(var(--duration) / var(--items) * 4 * -1); }
+.carousel-card:nth-child(6)  { animation-delay: calc(var(--duration) / var(--items) * 5 * -1); }
+.carousel-card:nth-child(7)  { animation-delay: calc(var(--duration) / var(--items) * 6 * -1); }
+.carousel-card:nth-child(8)  { animation-delay: calc(var(--duration) / var(--items) * 7 * -1); }
+.carousel-card:nth-child(9)  { animation-delay: calc(var(--duration) / var(--items) * 8 * -1); }
+.carousel-card:nth-child(10) { animation-delay: calc(var(--duration) / var(--items) * 9 * -1); }
+.carousel-card:nth-child(11) { animation-delay: calc(var(--duration) / var(--items) * 10 * -1); }
+.carousel-card:nth-child(12) { animation-delay: calc(var(--duration) / var(--items) * 11 * -1); }
+.carousel-card:nth-child(13) { animation-delay: calc(var(--duration) / var(--items) * 12 * -1); }
+.carousel-card:nth-child(14) { animation-delay: calc(var(--duration) / var(--items) * 13 * -1); }
+.carousel-card:nth-child(15) { animation-delay: calc(var(--duration) / var(--items) * 14 * -1); }
+.carousel-card:nth-child(16) { animation-delay: calc(var(--duration) / var(--items) * 15 * -1); }
+.carousel-card:nth-child(17) { animation-delay: calc(var(--duration) / var(--items) * 16 * -1); }
+.carousel-card:nth-child(18) { animation-delay: calc(var(--duration) / var(--items) * 17 * -1); }
+.carousel-card:nth-child(19) { animation-delay: calc(var(--duration) / var(--items) * 18 * -1); }
+.carousel-card:nth-child(20) { animation-delay: calc(var(--duration) / var(--items) * 19 * -1); }
+
+@keyframes scroll-cards {
+    to {
+        transform: translateX(calc(var(--items) * (var(--item-width) + var(--gap))));
+    }
 }
 
 .carousel-card img.card-img {
-    width: 120px;
-    height: 160px;
+    width: var(--item-width);
+    height: var(--item-height);
     object-fit: cover;
     object-position: center;
     border-radius: 6px;
     display: block;
     transition: opacity 0.15s;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.15);
     border: 2px solid #686561;
 }
 
-.carousel-card:hover img.card-img {
-    opacity: 0.75;
-}
+.carousel-card:hover img.card-img { opacity: 0.75; }
 
 .carousel-card-meta {
     margin-top: 6px;
     font-size: 12px;
     color: #2e2922;
-    width: 120px;
+    width: var(--item-width);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -203,9 +237,7 @@ nav {
     cursor: pointer;
 }
 
-.pfp-struct:hover .pfp {
-    outline: 3px solid #fff;
-}
+.pfp-struct:hover .pfp { outline: 3px solid #fff; }
 
 .pfp-struct {
     position: relative;
@@ -215,17 +247,9 @@ nav {
     transition: background 0.2s;
 }
 
-.pfp-struct:hover {
-    background-color: #332e27cb;
-}
-
-.pfp-struct:hover .drop-down-struct {
-    max-height: 350px;
-}
-
-.pfp-struct:hover .drop-down-struct .user-info h2 {
-    color: #332e27cb;
-}
+.pfp-struct:hover { background-color: #332e27cb; }
+.pfp-struct:hover .drop-down-struct { max-height: 350px; }
+.pfp-struct:hover .drop-down-struct .user-info h2 { color: #332e27cb; }
 
 nav ul {
     display: flex;
@@ -452,9 +476,7 @@ nav ul li a:hover {
     transition: transform 0.3s;
 }
 
-.plate-btn:hover .plate-icon circle {
-    stroke: #fff; 
-}
+.plate-btn:hover .plate-icon circle { stroke: #fff; }
 .plate-btn:hover .plate-icon { transform: rotate(15deg); }
 
 .plate-entry {
