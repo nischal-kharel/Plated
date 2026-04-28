@@ -81,7 +81,7 @@ main {
     position: relative;
     overflow: hidden;
     width: 100%;
-    height: calc(var(--item-height) + 52px); /* image + name + pfp row */
+    height: calc(var(--item-height) + 52px);
     margin-bottom: 12px;
 }
 
@@ -99,7 +99,6 @@ main {
     flex-direction: column;
     text-decoration: none;
     color: inherit;
-
     animation: scroll-cards var(--duration) linear infinite;
 }
 
@@ -109,20 +108,6 @@ main {
 .carousel-card:nth-child(4)  { animation-delay: calc(var(--duration) / var(--items) * 3 * -1); }
 .carousel-card:nth-child(5)  { animation-delay: calc(var(--duration) / var(--items) * 4 * -1); }
 .carousel-card:nth-child(6)  { animation-delay: calc(var(--duration) / var(--items) * 5 * -1); }
-.carousel-card:nth-child(7)  { animation-delay: calc(var(--duration) / var(--items) * 6 * -1); }
-.carousel-card:nth-child(8)  { animation-delay: calc(var(--duration) / var(--items) * 7 * -1); }
-.carousel-card:nth-child(9)  { animation-delay: calc(var(--duration) / var(--items) * 8 * -1); }
-.carousel-card:nth-child(10) { animation-delay: calc(var(--duration) / var(--items) * 9 * -1); }
-.carousel-card:nth-child(11) { animation-delay: calc(var(--duration) / var(--items) * 10 * -1); }
-.carousel-card:nth-child(12) { animation-delay: calc(var(--duration) / var(--items) * 11 * -1); }
-.carousel-card:nth-child(13) { animation-delay: calc(var(--duration) / var(--items) * 12 * -1); }
-.carousel-card:nth-child(14) { animation-delay: calc(var(--duration) / var(--items) * 13 * -1); }
-.carousel-card:nth-child(15) { animation-delay: calc(var(--duration) / var(--items) * 14 * -1); }
-.carousel-card:nth-child(16) { animation-delay: calc(var(--duration) / var(--items) * 15 * -1); }
-.carousel-card:nth-child(17) { animation-delay: calc(var(--duration) / var(--items) * 16 * -1); }
-.carousel-card:nth-child(18) { animation-delay: calc(var(--duration) / var(--items) * 17 * -1); }
-.carousel-card:nth-child(19) { animation-delay: calc(var(--duration) / var(--items) * 18 * -1); }
-.carousel-card:nth-child(20) { animation-delay: calc(var(--duration) / var(--items) * 19 * -1); }
 
 @keyframes scroll-cards {
     to {
@@ -139,7 +124,7 @@ main {
     display: block;
     transition: opacity 0.15s;
     box-shadow: 3px 3px 8px rgba(0,0,0,0.15);
-    border: 2px solid #686561;;
+    border: 2px solid #686561;
 }
 
 .carousel-card:hover img.card-img { opacity: 0.75; }
@@ -154,7 +139,6 @@ main {
     text-overflow: ellipsis;
     font-weight: 600;
 }
-
 
 /* ── Nav ── */
 nav {

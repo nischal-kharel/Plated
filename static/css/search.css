@@ -1,7 +1,7 @@
 body {
     margin: 0;
     font-family: Helvetica, Arial, sans-serif;
-    background-color: #f7f2e6;
+    background-color: bisque;
     color: #111;
 }
 
@@ -25,10 +25,10 @@ body {
 }
 
 .results-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(6, 150px);
     gap: 58px;
     align-items: flex-start;
-    flex-wrap: nowrap;
 }
 
 .recipe-card {
@@ -37,7 +37,6 @@ body {
     border: 3px solid #7b6d59;
     background-color: #d9d9d9;
     overflow: hidden;
-    flex-shrink: 0;
 }
 
 .recipe-card:hover {

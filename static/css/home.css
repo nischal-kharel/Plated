@@ -91,7 +91,6 @@ main {
     --item-width: 120px;
     --item-height: 160px;
     --gap: 20px;
-
     position: relative;
     overflow: hidden;
     width: 100%;
