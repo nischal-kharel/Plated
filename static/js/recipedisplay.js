@@ -117,6 +117,14 @@ function toggleLike() {
         btn.textContent = data.liked ? "♥ Liked" : "♡ Like";
     });
 }
+function toggleFavorite() {
+    fetch('/recipe/' + recipeId + '/favorite', { method: 'POST' })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        var btn = document.getElementById('favBtn');
+        btn.textContent = data.favorited ? '★ Favorited' : '☆ Favorite';
+    });
+}
 // ── Reviews ──
 const REVIEW_FULL = "/static/media/ratingimages/fullplate.png";
 const REVIEW_HALF = "/static/media/ratingimages/leftbrokenplate.png";

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Recipe</title>
+    <link rel="stylesheet" href="/static/css/instructions.css">
+</head>
+<body>
+<main>
+    <div class="instructions-card">
+        <div class="card-header">
+            <span class="step-indicator" id="stepIndicator">Step 1 of 5</span>
+            <span class="close-btn" onclick="history.back()">x</span>
+        </div>
+        <div class="slider-wrapper">
+        <div class="slider-track" id="sliderTrack">
+
+            <!-- step 1: basics -->
+            <div class="slide">
+                <h2 class="slide-title">Edit the basics...</h2>
+                <p class="slide-sub">Update the general info for your recipe</p>
+                <div class="field-group">
+                    <label class="field-label">Recipe Name</label>
+                    <input type="text" id="recipeName" class="styled-input"
+                           placeholder="Give your recipe a name..."
+                           maxlength="255"
+                           value="{{ recipe.recipe_name }}">
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Prep?</label>
+                    <select id="prepTime" class="styled-select">
+                        <option value="">Select prep time</option>
+                        <option value="minimal" {% if recipe.prep_time <= 10 %}selected{% endif %}>Minimal (5–10 min)</option>
+                        <option value="standard" {% if recipe.prep_time > 10 and recipe.prep_time <= 30 %}selected{% endif %}>Standard (15–30 min)</option>
+                        <option value="extensive" {% if recipe.prep_time > 30 %}selected{% endif %}>Extensive (45+ min)</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Cook?</label>
+                    <select id="cookTime" class="styled-select">
+                        <option value="">Select cook time</option>
+                        <option value="minimal" {% if recipe.cook_time <= 15 %}selected{% endif %}>Minimal (5–15 min)</option>
+                        <option value="standard" {% if recipe.cook_time > 15 and recipe.cook_time <= 45 %}selected{% endif %}>Standard (20–45 min)</option>
+                        <option value="extensive" {% if recipe.cook_time > 45 %}selected{% endif %}>Extensive (1+ hours)</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Servings?</label>
+                    <select id="servings" class="styled-select">
+                        <option value="">Select servings</option>
+                        <option value="minimal" {% if recipe.servings <= 2 %}selected{% endif %}>Minimal (1–2 ppl)</option>
+                        <option value="standard" {% if recipe.servings > 2 and recipe.servings <= 6 %}selected{% endif %}>Standard (3–6 ppl)</option>
+                        <option value="extensive" {% if recipe.servings > 6 %}selected{% endif %}>Extensive (8+ ppl)</option>
+                    </select>
+                </div>
+                <div class="slide-footer">
+                    <button class="next-btn" onclick="goNext()">Next</button>
+                </div>
+            </div>
+
+            <!-- step 2: description -->
+            <div class="slide">
+                <h2 class="slide-title">Edit your description...</h2>
+                <p class="slide-sub">Tell people what makes it special (at least 10 words)</p>
+                <div class="field-group">
+                    <label class="field-label">Description</label>
+                    <textarea id="recipeDescription" class="styled-textarea"
+                              placeholder="e.g. A crispy, golden homemade pizza...">{{ recipe.description or '' }}</textarea>
+                </div>
+                <div class="slide-footer">
+                    <button class="back-btn" onclick="goBack()">Back</button>
+                    <button class="next-btn" onclick="goNext()">Next</button>
+                </div>
+            </div>
+
+            <!-- step 3: specifics -->
+            <div class="slide">
+                <h2 class="slide-title">Edit the specifics...</h2>
+                <p class="slide-sub">Update photo, meal type and dietary info</p>
+
+                <div class="field-group">
+                    <label class="field-label">Recipe Photo</label>
+                    <label class="upload-card {% if recipe.recipe_pic %}has-image{% endif %}" for="recipePhoto">
+                        <img id="previewImg"
+                             src="{% if recipe.recipe_pic %}/static/{{ recipe.recipe_pic }}{% endif %}"
+                             alt="recipe preview"
+                             style="{% if recipe.recipe_pic %}display:block{% else %}display:none{% endif %}">
+                        <div class="upload-overlay" style="{% if recipe.recipe_pic %}display:none{% endif %}">+</div>
+                    </label>
+                    <input type="file" id="recipePhoto" accept="image/*">
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Meal Type <span class="field-req">pick at least one</span></label>
+                    <div class="chip-group" id="mealTypeGroup">
+                        <span class="chip {% if 'breakfast' in (recipe.meal_type or '') %}selected{% endif %}" data-val="breakfast">Breakfast</span>
+                        <span class="chip {% if 'lunch' in (recipe.meal_type or '') %}selected{% endif %}" data-val="lunch">Lunch</span>
+                        <span class="chip {% if 'dinner' in (recipe.meal_type or '') %}selected{% endif %}" data-val="dinner">Dinner</span>
+                        <span class="chip {% if 'dessert' in (recipe.meal_type or '') %}selected{% endif %}" data-val="dessert">Dessert</span>
+                        <span class="chip {% if 'snack' in (recipe.meal_type or '') %}selected{% endif %}" data-val="snack">Snack</span>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Dietary <span class="field-req">select all that apply</span></label>
+                    <div class="chip-group" id="dietaryGroup">
+                        <span class="chip {% if 'no-restriction' in (recipe.dietary_preference or '') %}selected{% endif %}" data-val="no-restriction">No Restriction</span>
+                        <span class="chip {% if 'vegetarian' in (recipe.dietary_preference or '') %}selected{% endif %}" data-val="vegetarian">Vegetarian</span>
+                        <span class="chip {% if 'pescatarian' in (recipe.dietary_preference or '') %}selected{% endif %}" data-val="pescatarian">Pescatarian</span>
+                        <span class="chip {% if 'vegan' in (recipe.dietary_preference or '') %}selected{% endif %}" data-val="vegan">Vegan</span>
+                        <span class="chip {% if 'kosher' in (recipe.dietary_preference or '') %}selected{% endif %}" data-val="kosher">Kosher</span>
+                        <span class="chip {% if 'halal' in (recipe.dietary_preference or '') %}selected{% endif %}" data-val="halal">Halal</span>
+                        <span class="chip {% if 'lactose-intolerant' in (recipe.dietary_preference or '') %}selected{% endif %}" data-val="lactose-intolerant">Lactose-Intolerant</span>
+                        <span class="chip {% if 'nut-free' in (recipe.dietary_preference or '') %}selected{% endif %}" data-val="nut-free">Nut-free</span>
+                        <span class="chip {% if 'gluten-free' in (recipe.dietary_preference or '') %}selected{% endif %}" data-val="gluten-free">Gluten-free</span>
+                    </div>
+                </div>
+
+                <div class="slide-footer">
+                    <button class="back-btn" onclick="goBack()">Back</button>
+                    <button class="next-btn" onclick="goNext()">Next</button>
+                </div>
+            </div>
+
+            <!-- step 4: ingredients -->
+            <div class="slide">
+                <h2 class="slide-title">Edit ingredients...</h2>
+                <p class="slide-sub">Add or remove ingredients</p>
+                <div class="add-row">
+                    <input type="text" id="ingredientInput" placeholder="Enter ingredient...">
+                    <button type="button" class="add-btn" onclick="addIngredient()">Add</button>
+                </div>
+                <div class="item-box" id="ingredientList">
+                    <p class="empty-hint">No ingredients added yet</p>
+                </div>
+                <div class="slide-footer">
+                    <button class="back-btn" onclick="goBack()">Back</button>
+                    <button class="next-btn" onclick="goNext()">Next</button>
+                </div>
+            </div>
+
+            <!-- step 5: steps -->
+            <div class="slide">
+                <h2 class="slide-title">Edit the steps...</h2>
+                <p class="slide-sub">Update each step of your recipe</p>
+                <div id="stepsContainer"></div>
+                <button type="button" class="add-step-btn" onclick="addStep()">+ Add Step</button>
+                <div class="slide-footer">
+                    <button class="back-btn" onclick="goBack()">Back</button>
+                    <button class="next-btn save-btn" onclick="saveRecipe()">Save Changes</button>
+                </div>
+            </div>
+
+        </div>
+        </div>
+    </div>
+</main>
+
+<!-- pass existing data to JS -->
+<script>
+    const EXISTING_INGREDIENTS = {{ recipe.ingredients | tojson }};
+    const EXISTING_DIRECTIONS  = {{ recipe.directions  | tojson }};
+    const RECIPE_ID            = {{ recipe.recipe_id }};
+</script>
+<script src="/static/js/edit_recipe.js"></script>
+</body>
+</html>

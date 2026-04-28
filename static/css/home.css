@@ -58,84 +58,136 @@ main {
     z-index: 1;
 }
 
+/* ── Carousel Container ── */
 .carousel-container {
     display: flex;
     flex-direction: column;
     background-color: rgb(255, 250, 244);
-    border: 2px solid gray;
-    height: fit-content;
+    border: 1px solid #e0d9ce;
     margin-top: 20px;
     margin-bottom: 20px;
 }
 
-.carousel-text > p{
-    font-size: 40px;
-    margin-top: 15px;
-    margin-left: 15px;
-    margin-bottom: 0px;
+.carousel-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 16px 16px 10px 16px;
 }
 
-/* styling for recipes carousal section of landing page */
+.carousel-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #777;
+    margin: 0;
+}
+
+/* ── Carousel ── */
 .recipe-carousel {
-    --items: 6;
-    --carousel-duration: 30s;
-    --carousel-width: 100vw;
-    --carousel-item-width: 150px;
-    --carousel-item-height: 200px;
-    --carousel-item-gap: 20px;
+    --items: 8;
+    --duration: 32s;
+    --item-width: 120px;
+    --item-height: 160px;
+    --gap: 20px;
 
     position: relative;
-    z-index: 10;
-    overflow-x: clip;
-    width: var(--carousel-width);
-    height: calc((0.3*var(--carousel-item-height)) + var(--carousel-item-height));
-
-    /* hover over image freezes carousel */
-    &:hover > a {
-        animation-play-state: paused;
-    }
-}
-
-/* new carasoul styling for each image */
-
-.recipe-carousel a {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    left: calc(-1 * (var(--carousel-item-width) + var(--carousel-item-gap)));
-    width: var(--carousel-item-width);
-    height: var(--carousel-item-height);
-    
-    animation: scroll-horizontal var(--carousel-duration) linear infinite;
-    animation-delay: calc(var(--carousel-duration) / var(--items) * 1 * var(--i) * -1);
-    &:nth-child(1) { --i: 0; }
-    &:nth-child(2) { --i: 1; }
-    &:nth-child(3) { --i: 2; }
-    &:nth-child(4) { --i: 3; }
-    &:nth-child(5) { --i: 4; }
-    &:nth-child(6) { --i: 5; }
-}
-
-.recipe-carousel a img {
+    overflow: hidden;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border: 2px solid black;
-    border-radius: 2%;
-    box-shadow: 5px 5px 10px 2px rgba(92, 92, 92, 0.3);
-    position: static;
-    transform: none;
-    animation: none;
+    height: calc(var(--item-height) + 52px); /* image + name + pfp row */
+    margin-bottom: 12px;
 }
 
+.recipe-carousel:hover .carousel-card {
+    animation-play-state: paused;
+}
 
-@keyframes scroll-horizontal {
-    100% {
-        transform: translateX(calc(
-            1 * (var(--items) * (var(--carousel-item-width) + var(--carousel-item-gap)))
-        )) translateY(-50%);
+/* ── Cards ── */
+.carousel-card {
+    position: absolute;
+    top: 8px;
+    left: calc(-1 * (var(--item-width) + var(--gap)));
+    width: var(--item-width);
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+
+    animation: scroll-cards var(--duration) linear infinite;
+}
+
+.carousel-card:nth-child(1)  { animation-delay: calc(var(--duration) / var(--items) * 0 * -1); }
+.carousel-card:nth-child(2)  { animation-delay: calc(var(--duration) / var(--items) * 1 * -1); }
+.carousel-card:nth-child(3)  { animation-delay: calc(var(--duration) / var(--items) * 2 * -1); }
+.carousel-card:nth-child(4)  { animation-delay: calc(var(--duration) / var(--items) * 3 * -1); }
+.carousel-card:nth-child(5)  { animation-delay: calc(var(--duration) / var(--items) * 4 * -1); }
+.carousel-card:nth-child(6)  { animation-delay: calc(var(--duration) / var(--items) * 5 * -1); }
+.carousel-card:nth-child(7)  { animation-delay: calc(var(--duration) / var(--items) * 6 * -1); }
+.carousel-card:nth-child(8)  { animation-delay: calc(var(--duration) / var(--items) * 7 * -1); }
+.carousel-card:nth-child(9)  { animation-delay: calc(var(--duration) / var(--items) * 8 * -1); }
+.carousel-card:nth-child(10) { animation-delay: calc(var(--duration) / var(--items) * 9 * -1); }
+.carousel-card:nth-child(11) { animation-delay: calc(var(--duration) / var(--items) * 10 * -1); }
+.carousel-card:nth-child(12) { animation-delay: calc(var(--duration) / var(--items) * 11 * -1); }
+.carousel-card:nth-child(13) { animation-delay: calc(var(--duration) / var(--items) * 12 * -1); }
+.carousel-card:nth-child(14) { animation-delay: calc(var(--duration) / var(--items) * 13 * -1); }
+.carousel-card:nth-child(15) { animation-delay: calc(var(--duration) / var(--items) * 14 * -1); }
+.carousel-card:nth-child(16) { animation-delay: calc(var(--duration) / var(--items) * 15 * -1); }
+.carousel-card:nth-child(17) { animation-delay: calc(var(--duration) / var(--items) * 16 * -1); }
+.carousel-card:nth-child(18) { animation-delay: calc(var(--duration) / var(--items) * 17 * -1); }
+.carousel-card:nth-child(19) { animation-delay: calc(var(--duration) / var(--items) * 18 * -1); }
+.carousel-card:nth-child(20) { animation-delay: calc(var(--duration) / var(--items) * 19 * -1); }
+
+@keyframes scroll-cards {
+    to {
+        transform: translateX(calc(var(--items) * (var(--item-width) + var(--gap))));
     }
 }
+
+.carousel-card img.card-img {
+    width: var(--item-width);
+    height: var(--item-height);
+    object-fit: cover;
+    object-position: center;
+    border-radius: 6px;
+    display: block;
+    transition: opacity 0.15s;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.15);
+    border: 2px solid #686561;;
+
+}
+
+.carousel-card:hover img.card-img { opacity: 0.75; }
+
+.carousel-card-meta {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #2e2922;
+    width: var(--item-width);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+}
+
+.carousel-card-user {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 3px;
+}
+
+
+.carousel-card-username {
+    font-size: 11px;
+    color: #999;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+
 
 *{
     margin: 0;
@@ -496,4 +548,134 @@ nav ul li a:hover {
 
 .plate-entry:hover .entry-options {
     max-height: 200px;
+}
+/* ── Welcome ── */
+.home-welcome {
+  padding: 32px 40px 8px 40px;
+}
+
+.home-greeting {
+  font-size: 22px;
+  font-weight: 400;
+  color: #2e2922;
+  font-family: Helvetica, sans-serif;
+}
+
+.home-username {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: #2e2922;
+}
+
+.home-username:hover {
+  color: #ffa806;
+}
+
+/* ── Carousel Header ── */
+.carousel-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 16px 16px 10px 16px;
+}
+
+.carousel-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #777;
+  margin: 0;
+  font-family: Helvetica, sans-serif;
+}
+
+.carousel-see-all {
+  font-size: 12px;
+  color: #ffa806;        /* matches your brand orange */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.carousel-see-all:hover {
+  text-decoration: underline;
+}
+
+/* ── Cards ── */
+.recipe-carousel {
+  display: flex;
+  gap: 16px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 0 16px 16px 16px;
+  scrollbar-width: none;
+}
+
+.recipe-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  flex-shrink: 0;
+  width: 120px;
+  font-family: Helvetica, sans-serif;
+}
+
+.carousel-card img.card-img {
+  width: 120px;
+  height: 160px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 6px;
+  display: block;
+  transition: opacity 0.15s;
+}
+
+.carousel-card:hover img.card-img {
+  opacity: 0.75;
+}
+
+.carousel-card-meta {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #2e2922;
+  width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+.carousel-card-user {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.carousel-card-pfp {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid #cac5be;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+.carousel-card-username {
+  font-size: 11px;
+  color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
 }

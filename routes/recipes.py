@@ -11,10 +11,15 @@ def get_recipes():
     try:
         with db.cursor() as cursor:
             cursor.execute(
-                '''SELECT recipe_id, recipe_name, recipe_pic
-                FROM recipes
-                ORDER BY created_at DESC
-                LIMIT 20'''
+                '''SELECT r.recipe_id, r.recipe_name, r.recipe_pic,
+                          u.username, u.profile_pic,
+                          COUNT(rl.recipe_id) AS like_count
+                   FROM recipes r
+                   JOIN users u ON r.user_id = u.user_id
+                   LEFT JOIN recipe_likes rl ON rl.recipe_id = r.recipe_id
+                   GROUP BY r.recipe_id, r.recipe_name, r.recipe_pic, u.username, u.profile_pic
+                   ORDER BY like_count DESC, r.created_at DESC
+                   LIMIT 20'''
             )
             recipes = cursor.fetchall()
     finally:
@@ -30,12 +35,25 @@ def get_feed_recipes():
     db = get_db()
     try:
         with db.cursor() as cursor:
+            # recipes from friends only
             cursor.execute(
-                '''SELECT r.recipe_id, r.recipe_name, r.recipe_pic, u.username
-                FROM recipes r
-                JOIN users u ON r.user_id = u.user_id
-                ORDER BY r.created_at DESC
-                LIMIT 20'''
+                '''SELECT r.recipe_id AS item_id, r.recipe_name AS item_name,
+                          r.recipe_pic AS item_pic, r.created_at,
+                          u.username, u.profile_pic, 'recipe' AS item_type
+                   FROM recipes r
+                   JOIN users u ON r.user_id = u.user_id
+                   JOIN follows f ON f.following_id = r.user_id
+                   WHERE f.follower_id = %s AND r.user_id != %s
+                   UNION ALL
+                   SELECT j.journal_id, j.journal_name, j.journal_pic, j.created_at,
+                          u.username, u.profile_pic, 'meal' AS item_type
+                   FROM journal_posts j
+                   JOIN users u ON j.user_id = u.user_id
+                   JOIN follows f ON f.following_id = j.user_id
+                   WHERE f.follower_id = %s AND j.user_id != %s
+                   ORDER BY created_at DESC
+                   LIMIT 20''',
+                (user_id, user_id, user_id, user_id)
             )
             recipes = cursor.fetchall()
     finally:
@@ -211,6 +229,73 @@ def like_recipe(recipe_id):
 
     return {'success': True, 'liked': liked}
 
+@recipes_bp.route('/my-recipes')
+def my_recipes():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('auth.login'))
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                'SELECT * FROM recipes WHERE user_id = %s ORDER BY created_at DESC',
+                (user_id,)
+            )
+            recipes = cursor.fetchall()
+    finally:
+        db.close()
+    return render_template('user_recipes.html', recipes=recipes)
+
+@recipes_bp.route('/recipe/<int:recipe_id>/delete', methods=['POST'])
+def delete_recipe(recipe_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return {'success': False}, 401
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                'DELETE FROM recipes WHERE recipe_id = %s AND user_id = %s',
+                (recipe_id, user_id)
+            )
+        db.commit()
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+    finally:
+        db.close()
+    return {'success': True}
+
+@recipes_bp.route('/recipe/<int:recipe_id>/favorite', methods=['POST'])
+def favorite_recipe(recipe_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return {'success': False}, 401
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                'SELECT 1 FROM favorite_recipes WHERE user_id = %s AND recipe_id = %s',
+                (user_id, recipe_id)
+            )
+            if cursor.fetchone():
+                cursor.execute(
+                    'DELETE FROM favorite_recipes WHERE user_id = %s AND recipe_id = %s',
+                    (user_id, recipe_id)
+                )
+                favorited = False
+            else:
+                cursor.execute(
+                    'INSERT INTO favorite_recipes (user_id, recipe_id) VALUES (%s, %s)',
+                    (user_id, recipe_id)
+                )
+                favorited = True
+        db.commit()
+    except Exception as e:
+        return {'success': False, 'error': str(e)}, 500
+    finally:
+        db.close()
+    return {'success': True, 'favorited': favorited}
+
 @recipes_bp.route('/recipe/<int:recipe_id>/reviews')
 def get_reviews(recipe_id):
     user_id = session.get('user_id')
@@ -362,9 +447,91 @@ def delete_review(review_id):
 
     return {'success': True}
 
+@recipes_bp.route('/recipe/<int:recipe_id>/edit', methods=['GET', 'POST'])
+def edit_recipe(recipe_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('auth.login'))
+
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                'SELECT * FROM recipes WHERE recipe_id = %s AND user_id = %s',
+                (recipe_id, user_id)
+            )
+            recipe = cursor.fetchone()
+    finally:
+        db.close()
+
+    if not recipe:
+        return redirect(url_for('recipes.my_recipes'))
+
+    if request.method == 'GET':
+        return render_template('edit_recipe.html', recipe=recipe)
+
+    # POST — save changes
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            recipe_pic = recipe['recipe_pic']
+            photo = request.files.get('recipe_pic')
+            if photo and photo.filename:
+                ext = os.path.splitext(photo.filename)[1].lower()
+                filename = uuid.uuid4().hex + ext
+                upload_folder = os.path.join(current_app.root_path, 'static', 'media', 'recipe_pics')
+                os.makedirs(upload_folder, exist_ok=True)
+                photo.save(os.path.join(upload_folder, filename))
+                recipe_pic = 'media/recipe_pics/' + filename
+
+            cursor.execute('''
+                UPDATE recipes SET
+                    recipe_name = %s, description = %s, ingredients = %s,
+                    directions = %s, prep_time = %s, cook_time = %s,
+                    servings = %s, dietary_preference = %s, meal_type = %s,
+                    recipe_pic = %s
+                WHERE recipe_id = %s AND user_id = %s
+            ''', (
+                request.form.get('recipe_name', '').strip(),
+                request.form.get('description', '').strip(),
+                request.form.get('ingredients', '').strip(),
+                request.form.get('directions', '').strip(),
+                int(request.form.get('prep_time', 0)),
+                int(request.form.get('cook_time', 0)),
+                int(request.form.get('servings', 1)),
+                request.form.get('dietary_preference', 'no-restriction'),
+                request.form.get('meal_types', ''),
+                recipe_pic, recipe_id, user_id
+            ))
+        db.commit()
+    finally:
+        db.close()
+
+        return {'success': True}
+
 @recipes_bp.route('/search')
 def search_page():
     return render_template('search.html')
+
+@recipes_bp.route('/search/users')
+def search_users():
+    q = request.args.get('q', '').strip()
+    if not q:
+        return {'users': []}
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                '''SELECT user_id, username, profile_pic
+                   FROM users
+                   WHERE username LIKE %s
+                   LIMIT 10''',
+                ('%' + q + '%',)
+            )
+            users = cursor.fetchall()
+    finally:
+        db.close()
+    return {'users': users}
 
 @recipes_bp.route('/search/results')
 def search_results():

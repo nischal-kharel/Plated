@@ -18,7 +18,7 @@
                 <a href="#" class="f-drop-down-link">
                     <p>Lists</p>
                 </a>
-                <a href="#" class="f-drop-down-link">
+                <a href="#" class="f-drop-down-link" id="openFriendSearch">
                     <p>Friends</p>
                 </a>
             </div>
@@ -72,7 +72,7 @@
                 <a href="/profile/{{ nav_user.user_id }}/reviews" class="drop-down-link">
                     <p>Reviews</p>
                 </a>
-                <a href="#" class="drop-down-link">
+                <a href="/my-recipes" class="drop-down-link">
                     <p>Recipes</p>
                 </a>
                 <a href="/mylists" class="drop-down-link">
@@ -84,6 +84,18 @@
             </div>
         </div>
     </div>
+
+<div id="friendSearchOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:999; align-items:center; justify-content:center;">
+  <div style="background:#fffcfc; border:2px solid #c4bb9e; border-radius:10px; width:460px; max-width:90vw; padding:24px; box-shadow:0 8px 32px rgba(0,0,0,0.2);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 style="font-size:18px; font-weight:700; color:#2e2922;">Find Friends</h2>
+      <span id="closeFriendSearch" style="font-size:22px; color:#aaa; cursor:pointer;">×</span>
+    </div>
+    <input id="friendSearchInput" type="text" placeholder="Search by username..."
+      style="width:100%; padding:10px 14px; border:1px solid #ddd; border-radius:6px; font-size:14px; font-family:inherit; background:#eef3f8; outline:none; box-sizing:border-box;">
+    <div id="friendSearchResults" style="margin-top:12px; display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto;"></div>
+  </div>
+</div>
 </nav>
 <script>
     document.getElementById('navSearchInput').addEventListener('keydown', function(e) {
@@ -91,4 +103,54 @@
             window.location.href = '/search?q=' + encodeURIComponent(this.value.trim());
         }
     });
+</script>
+<script>
+  var friendOverlay = document.getElementById('friendSearchOverlay');
+
+  document.getElementById('openFriendSearch').addEventListener('click', function(e) {
+    e.preventDefault();
+    friendOverlay.style.display = 'flex';
+    document.getElementById('friendSearchInput').focus();
+  });
+
+  document.getElementById('closeFriendSearch').addEventListener('click', function() {
+    friendOverlay.style.display = 'none';
+    document.getElementById('friendSearchResults').innerHTML = '';
+    document.getElementById('friendSearchInput').value = '';
+  });
+
+  friendOverlay.addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.style.display = 'none';
+      document.getElementById('friendSearchResults').innerHTML = '';
+      document.getElementById('friendSearchInput').value = '';
+    }
+  });
+
+  var friendSearchTimer;
+  document.getElementById('friendSearchInput').addEventListener('input', function() {
+    clearTimeout(friendSearchTimer);
+    var q = this.value.trim();
+    var results = document.getElementById('friendSearchResults');
+    if (!q) { results.innerHTML = ''; return; }
+    friendSearchTimer = setTimeout(function() {
+      fetch('/search/users?q=' + encodeURIComponent(q))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (!data.users || data.users.length === 0) {
+            results.innerHTML = '<p style="color:#aaa;font-size:13px;padding:8px 0;">No users found.</p>';
+            return;
+          }
+          results.innerHTML = data.users.map(function(u) {
+            var pfp = u.profile_pic
+              ? '/static/' + u.profile_pic
+              : '/static/media/profileimages/default-pfp.svg';
+            return '<a href="/profile/' + u.user_id + '" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:6px;text-decoration:none;color:#2e2922;background:#faf7f2;border:1px solid #e8e2d8;">' +
+              '<img src="' + pfp + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1.5px solid #e0d9ce;">' +
+              '<span style="font-size:14px;font-weight:600;">' + u.username + '</span>' +
+              '</a>';
+          }).join('');
+        });
+    }, 300);
+  });
 </script>

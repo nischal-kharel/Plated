@@ -142,7 +142,7 @@ def profile():
         followers=get_followers(user_id, user_id),
         following=get_following(user_id, user_id),
         favorite_recipes=get_favorite_recipes_by_user(user_id),
-        recent_meals=get_recent_meals_by_user(user_id),
+        recent_activity=get_recent_activity(user_id),
         current_user_id=user_id,
         following_status=False
     )
@@ -171,7 +171,7 @@ def view_profile(user_id):
         followers=get_followers(user_id, current_user_id),
         following=get_following(user_id, current_user_id),
         favorite_recipes=get_favorite_recipes_by_user(user_id),
-        recent_meals=get_recent_meals_by_user(user_id),
+        recent_activity=get_recent_activity(user_id),
         current_user_id=current_user_id,
         following_status=following_status
     )
@@ -256,6 +256,30 @@ def user_reviews(user_id):
         reviews=reviews,
         current_user_id=current_user_id
     )
+
+def get_recent_activity(user_id, limit=5):
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute('''
+                SELECT * FROM (
+                    SELECT recipe_id AS item_id, recipe_name AS item_name,
+                           recipe_pic AS item_pic, created_at, 'recipe' AS item_type
+                    FROM recipes WHERE user_id = %s
+                    ORDER BY created_at DESC LIMIT 5
+                ) recipes_sub
+                UNION ALL
+                SELECT * FROM (
+                    SELECT journal_id, journal_name, journal_pic, created_at, 'meal'
+                    FROM journal_posts WHERE user_id = %s
+                    ORDER BY created_at DESC LIMIT 5
+                ) meals_sub
+                ORDER BY created_at DESC
+                LIMIT %s
+            ''', (user_id, user_id, limit))
+            return cursor.fetchall()
+    finally:
+        db.close()
 
 @profile_bp.route('/users')
 def users():

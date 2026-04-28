@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Recipes</title>
+    <link rel="stylesheet" href="/static/css/navbar.css">
+    <link rel="stylesheet" href="/static/css/journal.css">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <main class="journal-page">
+        <h1 class="journal-title">My Recipes</h1>
+        {% if recipes %}
+            <div class="meal-grid">
+                {% for recipe in recipes %}
+                <div class="meal-post"
+                    data-id="{{ recipe.recipe_id }}"
+                    data-title="{{ recipe.recipe_name }}"
+                    data-description="{{ recipe.description or '' }}"
+                    data-prep="{{ recipe.prep_time or '' }}"
+                    data-cook="{{ recipe.cook_time or '' }}"
+                    data-servings="{{ recipe.servings or '' }}"
+                    data-meal-type="{{ recipe.meal_type or '' }}"
+                    data-ingredients="{{ recipe.ingredients or '' }}"
+                    data-image="{{ url_for('static', filename=recipe.recipe_pic) if recipe.recipe_pic else 'https://placehold.co/400x400' }}">
+                    <img src="{{ url_for('static', filename=recipe.recipe_pic) if recipe.recipe_pic else 'https://placehold.co/400x400' }}"
+                         alt="{{ recipe.recipe_name }}">
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="empty-message">No recipes posted yet.</p>
+        {% endif %}
+    </main>
+
+<div class="modal-backdrop" id="modal-backdrop"></div>
+<div class="meal-modal" id="meal-modal">
+    <button class="close-modal" id="close-modal" type="button">&times;</button>
+    <div class="meal-modal-content">
+        <img id="modal-image" src="" alt="Recipe">
+        <div class="meal-modal-text">
+            <h2 id="modal-title"></h2>
+            <p id="modal-description" style="color:#666; font-size:13px; border-left:3px solid #e8e2d8; padding-left:10px; margin-bottom:12px;"></p>
+            <div id="modal-badges" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;"></div>
+            <div id="modal-tags" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;"></div>
+            <div id="modal-ingredients" style="margin-bottom:12px;"></div>
+<hr style="margin: 12px 0; border: none; border-top: 1px solid #f0ece4;">
+<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+    <a id="view-recipe-btn" href="#" class="recipe-modal-btn recipe-modal-btn-view">View Recipe</a>
+    <a id="edit-recipe-btn" href="#" class="recipe-modal-btn recipe-modal-btn-edit">Edit Recipe</a>
+    <button id="delete-recipe-btn" type="button" class="recipe-modal-btn recipe-modal-btn-delete">Delete Recipe</button>
+</div>
+        </div>
+    </div>
+</div>
+
+    <script src="/static/js/user_recipes.js"></script>
+</body>
+</html>

@@ -1,41 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home Page</title>
-    <link rel="stylesheet" href="/static/css/navbar.css">
-    <link rel="stylesheet" type="text/css" href="../static/css/home.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Home Page</title>
+<link rel="stylesheet" href="/static/css/navbar.css">
+<link rel="stylesheet" type="text/css" href="../static/css/home.css">
 </head>
 <body>
   {% include 'navbar.html' %}
-    <main>
-        <section>
-            <div class="carousel-container">
-                <div class="carousel-text">
-                    <p>Trending Recipes</p>
-                </div>
-                <!-- trending -->
-                <div class="recipe-carousel" id="topRecipesCarousel">
-                    <!-- JS handles this -->
-                </div>
-            </div>
-        </section>
+<main>
 
-        <section>
-            <div class="carousel-container">
-                <div class="carousel-text">
-                    <p>Friend Activity</p>
-                </div>
-                <!-- friend activity -->
-                <div class="recipe-carousel" id="friendActivityCarousel">
-                    <!-- JS handles this -->
-                </div>
-            </div>
-        </section>
-    </main>
+  <!-- Welcome Header -->
+  <div class="home-welcome">
+    <h1 class="home-greeting">
+      Welcome back, <a href="/profile" class="home-username">{{ user.username }}</a>.
+      {% if has_friends %}
+        Here's what your friends have been trying...
+      {% else %}
+        Here's what's trending on Plated.
+      {% endif %}
+    </h1>
+  </div>
 
-    <!-- footer here -->
-    <script src="/static/js/home.js"></script>
+<!-- Friend Activity (only if has friends) -->
+{% if has_friends %}
+<section>
+  <div class="carousel-container">
+    <div class="carousel-header">
+      <p class="carousel-title">What Your Friends Have Been Trying</p>
+    </div>
+    <div class="recipe-carousel" id="friendActivityCarousel"></div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Trending Recipes -->
+<section>
+  <div class="carousel-container">
+    <div class="carousel-header">
+      <p class="carousel-title">Trending Recipes</p>
+    </div>
+    <div class="recipe-carousel" id="topRecipesCarousel"></div>
+  </div>
+</section>
+
+</main>
+<script src="/static/js/home.js"></script>
 </body>
 </html>

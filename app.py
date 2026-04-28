@@ -33,7 +33,25 @@ def home():
     if not user_id:
         flash('Please log in first.')
         return redirect(url_for('auth.login'))
-    return render_template('home.html')
+    
+    from routes.profile import get_user_by_id
+    user = get_user_by_id(user_id)
+    
+    # check if user has any friends
+    from db import get_db
+    db = get_db()
+    try:
+        with db.cursor() as cursor:
+            cursor.execute(
+                'SELECT COUNT(*) AS count FROM follows WHERE follower_id = %s',
+                (user_id,)
+            )
+            following_count = cursor.fetchone()['count']
+    finally:
+        db.close()
+    
+    has_friends = following_count > 0
+    return render_template('home.html', user=user, has_friends=has_friends)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

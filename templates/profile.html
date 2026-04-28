@@ -106,27 +106,27 @@
                 </div>
             </section>
 
-            <section class = "content-section">
-                <div class = "section-header">
-                    <h2> Recently </h2>
-                    <div class = "section-line"></div>
-                </div>
-                <div class="card-row">
-                    {% if recent_meals %}
-                        {% for meal in recent_meals %}
-                            <a href="{{ url_for('meals.journal_page') }}">
-                                {% if meal.journal_pic %}
-                                    <img src="{{ url_for('static', filename=meal.journal_pic) }}" alt="{{ meal.journal_name }}" class="post-card" />
-                                {% else %}
-                                    <img src="https://placehold.co/220x300?text=No+Image" alt="{{ meal.journal_name }}" class="post-card" />
-                                {% endif %}
-                            </a>
-                        {% endfor %}
+<section class="content-section">
+    <div class="section-header">
+        <h2>Recently</h2>
+        <div class="section-line"></div>
+    </div>
+    {% if recent_activity %}
+        <div class="card-row">
+            {% for item in recent_activity %}
+                <a href="{{ url_for('recipes.recipe_view', recipe_id=item.item_id) if item.item_type == 'recipe' else url_for('meals.journal_page') }}">
+                    {% if item.item_pic %}
+                        <img src="{{ url_for('static', filename=item.item_pic) }}" alt="{{ item.item_name }}" class="post-card" />
                     {% else %}
-                        <p class="empty-section-message">No recent meals yet.</p>
+                        <img src="https://placehold.co/220x300?text=No+Image" alt="{{ item.item_name }}" class="post-card" />
                     {% endif %}
-                </div>
-            </section>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-section-message">Nothing recent yet.</p>
+    {% endif %}
+</section>
         </section>
     </main>
 
