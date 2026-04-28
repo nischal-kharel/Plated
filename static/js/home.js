@@ -66,11 +66,14 @@ fetch("/get_recipes").then(r => r.json()).then(function(data) {
   });
 });
 
-// ── Friend Activity ──
 fetch("/get_feed_recipes").then(r => r.json()).then(function(data) {
   let carousel = document.getElementById("friendActivityCarousel");
   if (!carousel) return;
   let items = data.recipes || [];
+if (items.length === 0) {
+    carousel.innerHTML = '<p style="padding: 0 16px 16px 16px; color: #aaa; font-size: 13px; font-family: Helvetica, sans-serif;">Your friends haven\'t posted anything yet.</p>';
+    return;
+}
   carousel.style.setProperty("--items", items.length);
   items.forEach(function(item) {
     carousel.appendChild(buildFriendCard(item));
